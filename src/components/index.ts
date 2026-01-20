@@ -11,3 +11,4 @@ export { AISettings, AISettingsButton, initializeAIConfig } from './AISettings';
 export { PluginSearchModal } from './PluginSearchModal';
 export { FeedbackModal, FeedbackButton } from './FeedbackModal';
 export { RequestPluginModal, RequestPluginButton } from './RequestPluginModal';
+export { ConfigUploadModal } from './ConfigUploadModal';

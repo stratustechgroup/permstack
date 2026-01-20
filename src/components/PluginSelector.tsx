@@ -52,7 +52,7 @@ export function PluginSelector({ value, onChange, gamemode, onGamemodeChange }: 
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [customPlugins, setCustomPlugins] = useState<Plugin[]>([]);
-  const [sortBy, setSortBy] = useState<SortOption>('relevance');
+  const [sortBy, setSortBy] = useState<SortOption>('category');
   const [showSortMenu, setShowSortMenu] = useState(false);
 
   const allPlugins = [...plugins, ...customPlugins];

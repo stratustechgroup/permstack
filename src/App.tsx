@@ -10,11 +10,13 @@ import {
   OutputPanel,
   initializeAIConfig,
   FeedbackModal,
+  ConfigUploadModal,
 } from './components';
 import { Button } from './components/ui';
 import { TermsOfService, PrivacyPolicy, AcceptableUsePolicy } from './pages';
-import { rankTemplates, popularPlugins } from './data';
+import { rankTemplates, popularPlugins, plugins } from './data';
 import type { ServerType, Rank, Gamemode } from './data';
+import type { PermissionPluginType } from './lib/generateYaml';
 import './index.css';
 
 type Step = 'hero' | 'server' | 'plugins' | 'ranks' | 'output';
@@ -31,6 +33,7 @@ function App() {
   const [selectedTemplate, setSelectedTemplate] = useState('standard');
   const [ranks, setRanks] = useState<Rank[]>(rankTemplates[0].ranks);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showConfigUpload, setShowConfigUpload] = useState(false);
 
   const builderRef = useRef<HTMLDivElement>(null);
 
@@ -71,6 +74,29 @@ function App() {
 
   const handleBackFromLegal = () => {
     setLegalPage(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleConfigImport = (
+    importedRanks: Rank[],
+    detectedPlugins: string[],
+    _sourcePlugin: PermissionPluginType
+  ) => {
+    // Set the imported ranks
+    setRanks(importedRanks);
+    setSelectedTemplate('custom');
+
+    // Add detected plugins to selected plugins
+    const validPluginIds = plugins.map((p) => p.id);
+    const newPlugins = detectedPlugins.filter((p) => validPluginIds.includes(p));
+    const mergedPlugins = [...new Set([...selectedPlugins, ...newPlugins])];
+    setSelectedPlugins(mergedPlugins);
+
+    // Set server type to custom since we're importing
+    setServerType('custom');
+
+    // Move to the plugins step to let user verify/modify
+    setStep('plugins');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -265,9 +291,9 @@ function App() {
                 {step === 'server' && (
                   <ServerTypeSelector
                     value={serverType}
-                    gamemode={gamemode}
                     onChange={setServerType}
                     onGamemodeChange={setGamemode}
+                    onImportClick={() => setShowConfigUpload(true)}
                   />
                 )}
                 {step === 'plugins' && (
@@ -343,6 +369,13 @@ function App() {
 
       {/* Global Feedback Modal */}
       <FeedbackModal isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
+
+      {/* Config Upload Modal */}
+      <ConfigUploadModal
+        isOpen={showConfigUpload}
+        onClose={() => setShowConfigUpload(false)}
+        onImport={handleConfigImport}
+      />
     </div>
   );
 }
