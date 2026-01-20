@@ -384,23 +384,6 @@ function RankEditor({
                   />
                 </div>
 
-                {/* Quick color codes */}
-                <div className="flex flex-wrap gap-1">
-                  {colorCodes.map((code) => (
-                    <button
-                      key={code.code}
-                      onClick={() => onUpdate({ prefixColor: code.code })}
-                      className={`w-6 h-6 rounded border transition-all ${
-                        rank.prefixColor === code.code
-                          ? 'border-white ring-1 ring-white scale-110'
-                          : 'border-surface-700 hover:border-surface-500 hover:scale-105'
-                      }`}
-                      style={{ backgroundColor: code.hex }}
-                      title={`${code.name} (${code.code})`}
-                    />
-                  ))}
-                </div>
-
                 {/* Expanded color picker */}
                 {showColorPicker && (
                   <div className="bg-surface-800 rounded-lg p-3 space-y-3">
@@ -532,26 +515,6 @@ function RankEditor({
     </Card>
   );
 }
-
-// Color code palette for quick selection
-const colorCodes = [
-  { code: '&0', hex: '#000000', name: 'Black' },
-  { code: '&1', hex: '#0000AA', name: 'Dark Blue' },
-  { code: '&2', hex: '#00AA00', name: 'Dark Green' },
-  { code: '&3', hex: '#00AAAA', name: 'Dark Aqua' },
-  { code: '&4', hex: '#AA0000', name: 'Dark Red' },
-  { code: '&5', hex: '#AA00AA', name: 'Dark Purple' },
-  { code: '&6', hex: '#FFAA00', name: 'Gold' },
-  { code: '&7', hex: '#AAAAAA', name: 'Gray' },
-  { code: '&8', hex: '#555555', name: 'Dark Gray' },
-  { code: '&9', hex: '#5555FF', name: 'Blue' },
-  { code: '&a', hex: '#55FF55', name: 'Green' },
-  { code: '&b', hex: '#55FFFF', name: 'Aqua' },
-  { code: '&c', hex: '#FF5555', name: 'Red' },
-  { code: '&d', hex: '#FF55FF', name: 'Light Purple' },
-  { code: '&e', hex: '#FFFF55', name: 'Yellow' },
-  { code: '&f', hex: '#FFFFFF', name: 'White' },
-];
 
 // Gradient presets for MiniMessage format
 const gradientPresets = [
