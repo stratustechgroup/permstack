@@ -338,17 +338,32 @@ function RankEditor({
             </div>
 
             {/* Prefix */}
-            <div>
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-surface-300 mb-1">
                 Chat Prefix
               </label>
-              <input
-                type="text"
-                value={rank.prefix}
-                onChange={(e) => onUpdate({ prefix: e.target.value })}
-                className="input w-full font-mono"
-                placeholder="e.g. [Mod] "
-              />
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={rank.prefix}
+                  onChange={(e) => onUpdate({ prefix: e.target.value })}
+                  className="input w-full font-mono"
+                  placeholder="e.g. [Mod] "
+                />
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-xs text-surface-500 self-center">Text styles:</span>
+                  {textStylePresets.map((style) => (
+                    <button
+                      key={style.label}
+                      onClick={() => onUpdate({ prefix: transformText(rank.prefix, style.id) })}
+                      className="px-2 py-1 text-xs rounded border border-surface-700 hover:border-surface-500 text-surface-300 hover:text-white transition-colors"
+                      title={style.description}
+                    >
+                      {style.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
 
             {/* Prefix Color */}
@@ -514,6 +529,90 @@ function RankEditor({
       )}
     </Card>
   );
+}
+
+// Text style presets for Unicode transformations
+const textStylePresets = [
+  { id: 'smallcaps', label: 'ꜱᴍᴀʟʟ ᴄᴀᴘꜱ', description: 'Convert to small caps' },
+  { id: 'bold', label: '𝗕𝗼𝗹𝗱', description: 'Convert to bold Unicode' },
+  { id: 'italic', label: '𝘐𝘵𝘢𝘭𝘪𝘤', description: 'Convert to italic Unicode' },
+  { id: 'normal', label: 'Normal', description: 'Reset to normal text' },
+];
+
+// Transform text to different Unicode styles
+function transformText(text: string, style: string): string {
+  // Extract just the text content (remove brackets if present)
+  const bracketMatch = text.match(/^\[(.+)\]\s*$/);
+  const hasBrackets = !!bracketMatch;
+  const innerText = bracketMatch ? bracketMatch[1] : text.replace(/[\[\]]/g, '').trim();
+
+  let transformed: string;
+
+  switch (style) {
+    case 'smallcaps':
+      transformed = toSmallCaps(innerText);
+      break;
+    case 'bold':
+      transformed = toBoldUnicode(innerText);
+      break;
+    case 'italic':
+      transformed = toItalicUnicode(innerText);
+      break;
+    case 'normal':
+    default:
+      transformed = innerText;
+      break;
+  }
+
+  // Re-add brackets and trailing space if they were present
+  if (hasBrackets) {
+    return `[${transformed}] `;
+  }
+  return text.endsWith(' ') ? `${transformed} ` : transformed;
+}
+
+function toSmallCaps(text: string): string {
+  const smallCapsMap: Record<string, string> = {
+    'a': 'ᴀ', 'b': 'ʙ', 'c': 'ᴄ', 'd': 'ᴅ', 'e': 'ᴇ', 'f': 'ꜰ', 'g': 'ɢ', 'h': 'ʜ',
+    'i': 'ɪ', 'j': 'ᴊ', 'k': 'ᴋ', 'l': 'ʟ', 'm': 'ᴍ', 'n': 'ɴ', 'o': 'ᴏ', 'p': 'ᴘ',
+    'q': 'ǫ', 'r': 'ʀ', 's': 'ꜱ', 't': 'ᴛ', 'u': 'ᴜ', 'v': 'ᴠ', 'w': 'ᴡ', 'x': 'x',
+    'y': 'ʏ', 'z': 'ᴢ',
+    'A': 'ᴀ', 'B': 'ʙ', 'C': 'ᴄ', 'D': 'ᴅ', 'E': 'ᴇ', 'F': 'ꜰ', 'G': 'ɢ', 'H': 'ʜ',
+    'I': 'ɪ', 'J': 'ᴊ', 'K': 'ᴋ', 'L': 'ʟ', 'M': 'ᴍ', 'N': 'ɴ', 'O': 'ᴏ', 'P': 'ᴘ',
+    'Q': 'ǫ', 'R': 'ʀ', 'S': 'ꜱ', 'T': 'ᴛ', 'U': 'ᴜ', 'V': 'ᴠ', 'W': 'ᴡ', 'X': 'x',
+    'Y': 'ʏ', 'Z': 'ᴢ',
+  };
+  return text.split('').map(char => smallCapsMap[char] || char).join('');
+}
+
+function toBoldUnicode(text: string): string {
+  const boldMap: Record<string, string> = {
+    'a': '𝗮', 'b': '𝗯', 'c': '𝗰', 'd': '𝗱', 'e': '𝗲', 'f': '𝗳', 'g': '𝗴', 'h': '𝗵',
+    'i': '𝗶', 'j': '𝗷', 'k': '𝗸', 'l': '𝗹', 'm': '𝗺', 'n': '𝗻', 'o': '𝗼', 'p': '𝗽',
+    'q': '𝗾', 'r': '𝗿', 's': '𝘀', 't': '𝘁', 'u': '𝘂', 'v': '𝘃', 'w': '𝘄', 'x': '𝘅',
+    'y': '𝘆', 'z': '𝘇',
+    'A': '𝗔', 'B': '𝗕', 'C': '𝗖', 'D': '𝗗', 'E': '𝗘', 'F': '𝗙', 'G': '𝗚', 'H': '𝗛',
+    'I': '𝗜', 'J': '𝗝', 'K': '𝗞', 'L': '𝗟', 'M': '𝗠', 'N': '𝗡', 'O': '𝗢', 'P': '𝗣',
+    'Q': '𝗤', 'R': '𝗥', 'S': '𝗦', 'T': '𝗧', 'U': '𝗨', 'V': '𝗩', 'W': '𝗪', 'X': '𝗫',
+    'Y': '𝗬', 'Z': '𝗭',
+    '0': '𝟬', '1': '𝟭', '2': '𝟮', '3': '𝟯', '4': '𝟰', '5': '𝟱', '6': '𝟲', '7': '𝟳',
+    '8': '𝟴', '9': '𝟵',
+  };
+  return text.split('').map(char => boldMap[char] || char).join('');
+}
+
+function toItalicUnicode(text: string): string {
+  const italicMap: Record<string, string> = {
+    'a': '𝘢', 'b': '𝘣', 'c': '𝘤', 'd': '𝘥', 'e': '𝘦', 'f': '𝘧', 'g': '𝘨', 'h': '𝘩',
+    'i': '𝘪', 'j': '𝘫', 'k': '𝘬', 'l': '𝘭', 'm': '𝘮', 'n': '𝘯', 'o': '𝘰', 'p': '𝘱',
+    'q': '𝘲', 'r': '𝘳', 's': '𝘴', 't': '𝘵', 'u': '𝘶', 'v': '𝘷', 'w': '𝘸', 'x': '𝘹',
+    'y': '𝘺', 'z': '𝘻',
+    'A': '𝘈', 'B': '𝘉', 'C': '𝘊', 'D': '𝘋', 'E': '𝘌', 'F': '𝘍', 'G': '𝘎', 'H': '𝘏',
+    'I': '𝘐', 'J': '𝘑', 'K': '𝘒', 'L': '𝘓', 'M': '𝘔', 'N': '𝘕', 'O': '𝘖', 'P': '𝘗',
+    'Q': '𝘘', 'R': '𝘙', 'S': '𝘚', 'T': '𝘛', 'U': '𝘜', 'V': '𝘝', 'W': '𝘞', 'X': '𝘟',
+    'Y': '𝘠', 'Z': '𝘡',
+  };
+  return text.split('').map(char => italicMap[char] || char).join('');
 }
 
 // Gradient presets for MiniMessage format
