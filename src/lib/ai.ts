@@ -679,12 +679,12 @@ async function callAI(prompt: string): Promise<string> {
     throw new Error('No API key configured');
   }
 
-  if (config.apiProvider === 'openai') {
-    return callOpenAI(prompt);
+  if (config.apiProvider === 'anthropic') {
+    return callAnthropic(prompt);
   }
 
-  // Default to Anthropic
-  return callAnthropic(prompt);
+  // Default to OpenAI (gpt-4o-mini - most efficient)
+  return callOpenAI(prompt);
 }
 
 async function callAnthropic(prompt: string): Promise<string> {
@@ -718,7 +718,7 @@ async function callOpenAI(prompt: string): Promise<string> {
       'Authorization': `Bearer ${config.apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4o-mini',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 1024,
     }),

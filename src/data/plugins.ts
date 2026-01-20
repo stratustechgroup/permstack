@@ -2,6 +2,50 @@ import type { Plugin } from './types';
 
 export const plugins: Plugin[] = [
   // ============================================
+  // PERMISSIONS CATEGORY (Single Selection)
+  // ============================================
+  {
+    id: 'luckperms',
+    name: 'LuckPerms',
+    slug: 'luckperms',
+    description: 'Modern permissions plugin with web editor and sync',
+    category: 'permissions',
+    isPopular: true,
+  },
+  {
+    id: 'permissionsex',
+    name: 'PermissionsEx',
+    slug: 'permissionsex',
+    description: 'Classic permissions plugin (legacy, not recommended)',
+    category: 'permissions',
+    isPopular: false,
+  },
+  {
+    id: 'groupmanager',
+    name: 'GroupManager',
+    slug: 'groupmanager',
+    description: 'Simple permissions with inheritance (legacy)',
+    category: 'permissions',
+    isPopular: false,
+  },
+  {
+    id: 'ultrapermissions',
+    name: 'UltraPermissions',
+    slug: 'ultrapermissions',
+    description: 'GUI-based permission management with MySQL support',
+    category: 'permissions',
+    isPopular: false,
+  },
+  {
+    id: 'powerfulperms',
+    name: 'PowerfulPerms',
+    slug: 'powerfulperms',
+    description: 'BungeeCord-compatible permissions with MySQL',
+    category: 'permissions',
+    isPopular: false,
+  },
+
+  // ============================================
   // ESSENTIALS CATEGORY
   // ============================================
   {
@@ -9,14 +53,6 @@ export const plugins: Plugin[] = [
     name: 'EssentialsX',
     slug: 'essentialsx',
     description: 'Core server commands: homes, teleports, economy, chat',
-    category: 'essentials',
-    isPopular: true,
-  },
-  {
-    id: 'luckperms',
-    name: 'LuckPerms',
-    slug: 'luckperms',
-    description: 'Advanced permissions management (assumed installed)',
     category: 'essentials',
     isPopular: true,
   },
