@@ -254,13 +254,13 @@ function RankEditor({
     <Card
       className={`transition-all ${expanded ? 'ring-1 ring-primary-500/50' : ''} ${
         isDragging ? 'opacity-50 scale-95' : ''
-      } ${isDragOver ? 'ring-2 ring-primary-400 bg-primary-500/10' : ''}`}
-      draggable
-      onDragStart={onDragStart}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
-      onDragEnd={onDragEnd}
+      } ${isDragOver && !expanded ? 'ring-2 ring-primary-400 bg-primary-500/10' : ''}`}
+      draggable={!expanded}
+      onDragStart={!expanded ? onDragStart : undefined}
+      onDragOver={!expanded ? onDragOver : undefined}
+      onDragLeave={!expanded ? onDragLeave : undefined}
+      onDrop={!expanded ? onDrop : undefined}
+      onDragEnd={!expanded ? onDragEnd : undefined}
     >
       {/* Collapsed view */}
       <div className="flex items-center gap-3">
@@ -546,21 +546,24 @@ function transformText(text: string, style: string): string {
   const hasBrackets = !!bracketMatch;
   const innerText = bracketMatch ? bracketMatch[1] : text.replace(/[\[\]]/g, '').trim();
 
+  // First, normalize any existing Unicode styled text back to ASCII
+  const normalizedText = toNormalText(innerText);
+
   let transformed: string;
 
   switch (style) {
     case 'smallcaps':
-      transformed = toSmallCaps(innerText);
+      transformed = toSmallCaps(normalizedText);
       break;
     case 'bold':
-      transformed = toBoldUnicode(innerText);
+      transformed = toBoldUnicode(normalizedText);
       break;
     case 'italic':
-      transformed = toItalicUnicode(innerText);
+      transformed = toItalicUnicode(normalizedText);
       break;
     case 'normal':
     default:
-      transformed = innerText;
+      transformed = normalizedText;
       break;
   }
 
@@ -569,6 +572,38 @@ function transformText(text: string, style: string): string {
     return `[${transformed}] `;
   }
   return text.endsWith(' ') ? `${transformed} ` : transformed;
+}
+
+// Convert Unicode styled text back to normal ASCII
+function toNormalText(text: string): string {
+  const reverseMap: Record<string, string> = {
+    // Small caps to normal
+    'ᴀ': 'A', 'ʙ': 'B', 'ᴄ': 'C', 'ᴅ': 'D', 'ᴇ': 'E', 'ꜰ': 'F', 'ɢ': 'G', 'ʜ': 'H',
+    'ɪ': 'I', 'ᴊ': 'J', 'ᴋ': 'K', 'ʟ': 'L', 'ᴍ': 'M', 'ɴ': 'N', 'ᴏ': 'O', 'ᴘ': 'P',
+    'ǫ': 'Q', 'ʀ': 'R', 'ꜱ': 'S', 'ᴛ': 'T', 'ᴜ': 'U', 'ᴠ': 'V', 'ᴡ': 'W',
+    'ʏ': 'Y', 'ᴢ': 'Z',
+    // Bold to normal
+    '𝗮': 'a', '𝗯': 'b', '𝗰': 'c', '𝗱': 'd', '𝗲': 'e', '𝗳': 'f', '𝗴': 'g', '𝗵': 'h',
+    '𝗶': 'i', '𝗷': 'j', '𝗸': 'k', '𝗹': 'l', '𝗺': 'm', '𝗻': 'n', '𝗼': 'o', '𝗽': 'p',
+    '𝗾': 'q', '𝗿': 'r', '𝘀': 's', '𝘁': 't', '𝘂': 'u', '𝘃': 'v', '𝘄': 'w', '𝘅': 'x',
+    '𝘆': 'y', '𝘇': 'z',
+    '𝗔': 'A', '𝗕': 'B', '𝗖': 'C', '𝗗': 'D', '𝗘': 'E', '𝗙': 'F', '𝗚': 'G', '𝗛': 'H',
+    '𝗜': 'I', '𝗝': 'J', '𝗞': 'K', '𝗟': 'L', '𝗠': 'M', '𝗡': 'N', '𝗢': 'O', '𝗣': 'P',
+    '𝗤': 'Q', '𝗥': 'R', '𝗦': 'S', '𝗧': 'T', '𝗨': 'U', '𝗩': 'V', '𝗪': 'W', '𝗫': 'X',
+    '𝗬': 'Y', '𝗭': 'Z',
+    '𝟬': '0', '𝟭': '1', '𝟮': '2', '𝟯': '3', '𝟰': '4', '𝟱': '5', '𝟲': '6', '𝟳': '7',
+    '𝟴': '8', '𝟵': '9',
+    // Italic to normal
+    '𝘢': 'a', '𝘣': 'b', '𝘤': 'c', '𝘥': 'd', '𝘦': 'e', '𝘧': 'f', '𝘨': 'g', '𝘩': 'h',
+    '𝘪': 'i', '𝘫': 'j', '𝘬': 'k', '𝘭': 'l', '𝘮': 'm', '𝘯': 'n', '𝘰': 'o', '𝘱': 'p',
+    '𝘲': 'q', '𝘳': 'r', '𝘴': 's', '𝘵': 't', '𝘶': 'u', '𝘷': 'v', '𝘸': 'w', '𝘹': 'x',
+    '𝘺': 'y', '𝘻': 'z',
+    '𝘈': 'A', '𝘉': 'B', '𝘊': 'C', '𝘋': 'D', '𝘌': 'E', '𝘍': 'F', '𝘎': 'G', '𝘏': 'H',
+    '𝘐': 'I', '𝘑': 'J', '𝘒': 'K', '𝘓': 'L', '𝘔': 'M', '𝘕': 'N', '𝘖': 'O', '𝘗': 'P',
+    '𝘘': 'Q', '𝘙': 'R', '𝘚': 'S', '𝘛': 'T', '𝘜': 'U', '𝘝': 'V', '𝘞': 'W', '𝘟': 'X',
+    '𝘠': 'Y', '𝘡': 'Z',
+  };
+  return Array.from(text).map(char => reverseMap[char] || char).join('');
 }
 
 function toSmallCaps(text: string): string {
