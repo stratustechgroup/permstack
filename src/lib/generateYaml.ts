@@ -110,11 +110,23 @@ export function generateCommands(options: GenerateOptions): string {
     }
   }
 
-  // Set prefixes
+  // Set weights (higher rank = higher weight = higher priority)
+  lines.push('# ---------- WEIGHTS ----------');
+  const baseWeight = 79;
+  for (let i = 0; i < ranks.length; i++) {
+    const rank = ranks[i];
+    const weight = baseWeight + i;
+    lines.push(`/lp group ${rank.name} setweight ${weight}`);
+  }
+  lines.push('');
+
+  // Set prefixes with weight priority
   lines.push('# ---------- PREFIXES ----------');
-  for (const rank of ranks) {
+  for (let i = 0; i < ranks.length; i++) {
+    const rank = ranks[i];
+    const weight = baseWeight + i;
     const prefix = `${rank.prefixColor}${rank.prefix}`.replace(/"/g, '\\"');
-    lines.push(`/lp group ${rank.name} meta setprefix "${prefix}"`);
+    lines.push(`/lp group ${rank.name} meta setprefix ${weight} "${prefix}"`);
   }
   lines.push('');
 
@@ -131,10 +143,19 @@ export function generateCommands(options: GenerateOptions): string {
   return lines.join('\n');
 }
 
+interface LuckPermsNode {
+  type: 'permission' | 'inheritance' | 'prefix' | 'suffix' | 'weight' | 'meta' | 'display_name';
+  key: string;
+  value: boolean;
+}
+
 export function generateJson(options: GenerateOptions): string {
   const { serverType, selectedPlugins, ranks } = options;
 
-  const groups: Record<string, unknown> = {};
+  const groups: Record<string, { nodes: LuckPermsNode[] }> = {};
+
+  // Calculate base weight - higher ranks get higher weight
+  const baseWeight = 79;
 
   for (const rank of ranks) {
     const permissions = getDefaultPermissionsForRank(
@@ -149,48 +170,67 @@ export function generateJson(options: GenerateOptions): string {
 
     const rankIndex = ranks.findIndex((r) => r.id === rank.id);
     const parentRank = rankIndex > 0 ? ranks[rankIndex - 1] : null;
+    const weight = baseWeight + rankIndex;
 
-    const nodes: { key: string; value: boolean }[] = [];
+    const nodes: LuckPermsNode[] = [];
 
     // Add permission nodes
     for (const perm of rankSpecificPerms) {
       nodes.push({
+        type: 'permission',
         key: perm.node,
         value: true,
       });
     }
 
-    // Add parent
+    // Add inheritance (parent group)
     if (parentRank) {
       nodes.push({
+        type: 'inheritance',
         key: `group.${parentRank.name}`,
         value: true,
       });
     }
 
-    // Add prefix
+    // Add prefix with weight
+    const prefixValue = `${rank.prefixColor}${rank.prefix}`.trim();
+    if (prefixValue) {
+      nodes.push({
+        type: 'prefix',
+        key: `prefix.${weight}.${prefixValue}`,
+        value: true,
+      });
+    }
+
+    // Add weight
     nodes.push({
-      key: `prefix.${(rankIndex + 1) * 10}.${rank.prefixColor}${rank.prefix}`,
+      type: 'weight',
+      key: `weight.${weight}`,
       value: true,
     });
 
-    // Add separator if custom
+    // Add separator as meta if custom
     if (rank.separator && rank.separator !== ':') {
       nodes.push({
+        type: 'meta',
         key: `meta.separator.${rank.separator}`,
         value: true,
       });
     }
 
     groups[rank.name] = {
-      name: rank.name,
       nodes,
     };
   }
 
   const output = {
-    '_schema-version': 1,
+    metadata: {
+      generatedBy: 'PermStack',
+      generatedAt: new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC',
+    },
     groups,
+    tracks: {},
+    users: {},
   };
 
   return JSON.stringify(output, null, 2);
