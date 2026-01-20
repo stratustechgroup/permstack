@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Palette } from 'lucide-react';
 import { Card, Badge, Button } from './ui';
+import { AddRankModal } from './AddRankModal';
 import { rankTemplates, rankLevels, separatorPresets } from '../data';
 import type { Rank, RankTemplate, RankLevel } from '../data';
 
@@ -20,6 +21,7 @@ export function RankBuilder({
   const [expandedRank, setExpandedRank] = useState<string | null>(null);
   const [draggedRank, setDraggedRank] = useState<string | null>(null);
   const [dragOverRank, setDragOverRank] = useState<string | null>(null);
+  const [showAddModal, setShowAddModal] = useState(false);
 
   const handleTemplateSelect = (templateId: string) => {
     onTemplateChange(templateId);
@@ -35,20 +37,9 @@ export function RankBuilder({
     );
   };
 
-  const handleAddRank = () => {
-    const newId = `rank-${Date.now()}`;
-    const newRank: Rank = {
-      id: newId,
-      name: 'newrank',
-      displayName: 'New Rank',
-      prefix: '[New] ',
-      prefixColor: '&f',
-      separator: ':',
-      order: ranks.length,
-      level: 'player',
-    };
+  const handleAddRank = (newRank: Rank) => {
     onRanksChange([...ranks, newRank]);
-    setExpandedRank(newId);
+    setExpandedRank(newRank.id);
   };
 
   const handleRemoveRank = (rankId: string) => {
@@ -146,7 +137,7 @@ export function RankBuilder({
           <h3 className="text-sm font-medium text-surface-400 uppercase tracking-wider">
             Rank Hierarchy (lowest to highest)
           </h3>
-          <Button size="sm" variant="secondary" onClick={handleAddRank}>
+          <Button size="sm" variant="secondary" onClick={() => setShowAddModal(true)}>
             <Plus className="w-4 h-4 mr-1" />
             Add Rank
           </Button>
@@ -180,6 +171,14 @@ export function RankBuilder({
           Tip: Ranks at the top inherit all permissions from ranks below. Set the permission level to control what permissions each rank receives.
         </p>
       </div>
+
+      {/* Add Rank Modal */}
+      <AddRankModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onAdd={handleAddRank}
+        existingRanksCount={ranks.length}
+      />
     </div>
   );
 }

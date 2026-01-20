@@ -5,3 +5,6 @@ export { ServerTypeSelector } from './ServerTypeSelector';
 export { PluginSelector } from './PluginSelector';
 export { RankBuilder } from './RankBuilder';
 export { OutputPanel } from './OutputPanel';
+export { AddRankModal } from './AddRankModal';
+export { AISettings, AISettingsButton, initializeAIConfig } from './AISettings';
+export { PluginSearchModal } from './PluginSearchModal';

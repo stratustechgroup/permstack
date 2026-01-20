@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
 import {
   Header,
@@ -8,6 +8,7 @@ import {
   PluginSelector,
   RankBuilder,
   OutputPanel,
+  initializeAIConfig,
 } from './components';
 import { Button } from './components/ui';
 import { rankTemplates, popularPlugins } from './data';
@@ -26,6 +27,11 @@ function App() {
   const [ranks, setRanks] = useState<Rank[]>(rankTemplates[0].ranks);
 
   const builderRef = useRef<HTMLDivElement>(null);
+
+  // Initialize AI config from localStorage on app load
+  useEffect(() => {
+    initializeAIConfig();
+  }, []);
 
   const handleStart = () => {
     setStep('server');
