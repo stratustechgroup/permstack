@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Search, Check, Plus, AlertCircle, MessageSquare, Package } from 'lucide-react';
+import { Search, Check, Plus, AlertCircle, Package } from 'lucide-react';
 import { Card, Button, Badge } from './ui';
 import { PluginSearchModal } from './PluginSearchModal';
-import { FeedbackModal } from './FeedbackModal';
 import { RequestPluginModal } from './RequestPluginModal';
 import { plugins, pluginsByCategory } from '../data';
 import { SINGLE_SELECT_CATEGORIES } from '../data/types';
@@ -47,7 +46,6 @@ const categoryOrder: PluginCategory[] = [
 export function PluginSelector({ value, onChange }: PluginSelectorProps) {
   const [search, setSearch] = useState('');
   const [showSearchModal, setShowSearchModal] = useState(false);
-  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [customPlugins, setCustomPlugins] = useState<Plugin[]>([]);
 
@@ -130,10 +128,6 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
           <Button size="sm" variant="secondary" onClick={() => setShowRequestModal(true)}>
             <Package className="w-4 h-4 mr-1" />
             Request Plugin
-          </Button>
-          <Button size="sm" variant="secondary" onClick={() => setShowFeedbackModal(true)}>
-            <MessageSquare className="w-4 h-4 mr-1" />
-            Feedback
           </Button>
         </div>
       </div>
@@ -250,12 +244,6 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
         onClose={() => setShowSearchModal(false)}
         onAddPlugin={handleAddCustomPlugin}
         existingPlugins={value}
-      />
-
-      {/* Feedback Modal */}
-      <FeedbackModal
-        isOpen={showFeedbackModal}
-        onClose={() => setShowFeedbackModal(false)}
       />
 
       {/* Request Plugin Modal */}

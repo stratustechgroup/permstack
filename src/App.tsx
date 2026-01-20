@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, MessageSquare } from 'lucide-react';
 import {
   Header,
   Footer,
@@ -9,6 +9,7 @@ import {
   RankBuilder,
   OutputPanel,
   initializeAIConfig,
+  FeedbackModal,
 } from './components';
 import { Button } from './components/ui';
 import { TermsOfService, PrivacyPolicy, AcceptableUsePolicy } from './pages';
@@ -28,6 +29,7 @@ function App() {
   );
   const [selectedTemplate, setSelectedTemplate] = useState('standard');
   const [ranks, setRanks] = useState<Rank[]>(rankTemplates[0].ranks);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const builderRef = useRef<HTMLDivElement>(null);
 
@@ -41,6 +43,15 @@ function App() {
     setTimeout(() => {
       builderRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
+  };
+
+  const handleHome = () => {
+    setStep('hero');
+    setServerType(null);
+    setSelectedPlugins(popularPlugins.map((p) => p.id));
+    setSelectedTemplate('standard');
+    setRanks(rankTemplates[0].ranks);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleTemplateChange = (templateId: string) => {
@@ -114,16 +125,20 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header onStart={step === 'hero' ? handleStart : undefined} />
+      <Header
+        onStart={step === 'hero' ? handleStart : undefined}
+        onHome={handleHome}
+      />
 
       <main className="flex-1">
         {step === 'hero' && <Hero onStart={handleStart} />}
 
         {step !== 'hero' && (
           <div ref={builderRef} className="relative">
-            {/* Floating Navigation Sidebar */}
-            <div className="hidden lg:block fixed left-4 top-1/2 -translate-y-1/2 z-40">
+            {/* Fixed right sidebar with navigation and feedback */}
+            <div className="hidden lg:block fixed right-4 top-1/2 -translate-y-1/2 z-40">
               <div className="bg-surface-900/95 backdrop-blur-sm border border-surface-800 rounded-xl p-3 shadow-xl space-y-3">
+                {/* Navigation controls */}
                 <Button
                   variant="secondary"
                   size="sm"
@@ -173,19 +188,25 @@ function App() {
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={() => {
-                      setStep('hero');
-                      setServerType(null);
-                      setSelectedPlugins(popularPlugins.map((p) => p.id));
-                      setSelectedTemplate('standard');
-                      setRanks(rankTemplates[0].ranks);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
+                    onClick={handleHome}
                     className="w-full"
                   >
                     Start Over
                   </Button>
                 )}
+
+                {/* Feedback button */}
+                <div className="pt-2 border-t border-surface-800">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowFeedback(true)}
+                    className="w-full flex items-center justify-center gap-2"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    Feedback
+                  </Button>
+                </div>
               </div>
             </div>
 
@@ -262,7 +283,7 @@ function App() {
                 )}
               </div>
 
-              {/* Bottom Navigation (mobile/tablet fallback) */}
+              {/* Bottom Navigation (mobile/tablet) */}
               <div className="flex items-center justify-between border-t border-surface-800 pt-6 lg:hidden">
                 <Button
                   variant="secondary"
@@ -272,6 +293,15 @@ function App() {
                 >
                   <ChevronLeft className="w-4 h-4" />
                   Back
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowFeedback(true)}
+                  className="flex items-center gap-2"
+                >
+                  <MessageSquare className="w-4 h-4" />
                 </Button>
 
                 {currentStepIndex < steps.length - 1 ? (
@@ -286,14 +316,7 @@ function App() {
                 ) : (
                   <Button
                     variant="secondary"
-                    onClick={() => {
-                      setStep('hero');
-                      setServerType(null);
-                      setSelectedPlugins(popularPlugins.map((p) => p.id));
-                      setSelectedTemplate('standard');
-                      setRanks(rankTemplates[0].ranks);
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
+                    onClick={handleHome}
                   >
                     Start Over
                   </Button>
@@ -305,6 +328,9 @@ function App() {
       </main>
 
       <Footer onNavigate={handleLegalNavigate} />
+
+      {/* Global Feedback Modal */}
+      <FeedbackModal isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
     </div>
   );
 }

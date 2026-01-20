@@ -4,9 +4,10 @@ import { Logo } from './Logo';
 
 interface HeaderProps {
   onStart?: () => void;
+  onHome?: () => void;
 }
 
-export function Header({ onStart }: HeaderProps) {
+export function Header({ onStart, onHome }: HeaderProps) {
   const [showAISettings, setShowAISettings] = useState(false);
 
   return (
@@ -14,8 +15,10 @@ export function Header({ onStart }: HeaderProps) {
       <header className="border-b border-surface-800/50 bg-surface-950/90 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Logo />
+            {/* Logo - clickable to go home */}
+            <div onClick={onHome} className="cursor-pointer">
+              <Logo />
+            </div>
 
             {/* Right side */}
             <div className="flex items-center gap-3">
