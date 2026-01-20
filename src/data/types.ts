@@ -7,6 +7,17 @@ export type ServerType =
   | 'creative'
   | 'custom';
 
+// Gamemode types for plugin filtering
+export type Gamemode = 'survival' | 'skyblock' | 'factions' | 'minigames' | 'all';
+
+export const GAMEMODE_INFO: Record<Gamemode, { name: string; description: string }> = {
+  all: { name: 'All Plugins', description: 'Show all available plugins' },
+  survival: { name: 'Survival/SMP', description: 'Vanilla survival with land claiming and protection' },
+  skyblock: { name: 'Skyblock', description: 'Skyblock, OneBlock, and island-based servers' },
+  factions: { name: 'Factions/PvP', description: 'PvP factions with raiding and combat' },
+  minigames: { name: 'Minigames/Network', description: 'Minigames, lobbies, and server networks' },
+};
+
 export type RiskLevel = 'safe' | 'moderate' | 'dangerous' | 'critical';
 
 // Rank hierarchy: player -> donor tiers -> staff tiers
@@ -70,6 +81,7 @@ export interface Plugin {
   description: string;
   category: PluginCategory;
   isPopular: boolean;
+  gamemodes?: Gamemode[]; // Which gamemodes this plugin is recommended for
 }
 
 export interface PermissionNode {
