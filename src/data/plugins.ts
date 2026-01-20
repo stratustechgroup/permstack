@@ -500,6 +500,402 @@ export const plugins: Plugin[] = [
     category: 'combat',
     isPopular: false,
   },
+
+  // ============================================
+  // MINIGAMES CATEGORY
+  // ============================================
+  {
+    id: 'bedwars',
+    name: 'BedWars1058',
+    slug: 'bedwars1058',
+    description: 'Popular BedWars minigame plugin',
+    category: 'gamemodes',
+    isPopular: true,
+  },
+  {
+    id: 'screamingbedwars',
+    name: 'Screaming BedWars',
+    slug: 'screamingbedwars',
+    description: 'Flexible BedWars with CakeWars/EggWars variants',
+    category: 'gamemodes',
+    isPopular: true,
+  },
+  {
+    id: 'skywars',
+    name: 'SkyWars',
+    slug: 'skywars',
+    description: 'Classic SkyWars minigame',
+    category: 'gamemodes',
+    isPopular: true,
+  },
+  {
+    id: 'murdermystery',
+    name: 'Murder Mystery',
+    slug: 'murdermystery',
+    description: 'Murder mystery minigame',
+    category: 'gamemodes',
+    isPopular: false,
+  },
+  {
+    id: 'buildbattle',
+    name: 'BuildBattle',
+    slug: 'buildbattle',
+    description: 'Competitive building minigame',
+    category: 'gamemodes',
+    isPopular: false,
+  },
+
+  // ============================================
+  // ANTICHEAT CATEGORY
+  // ============================================
+  {
+    id: 'spartan',
+    name: 'Spartan Anti-Cheat',
+    slug: 'spartan',
+    description: 'Popular anticheat with Bedrock/Geyser support',
+    category: 'moderation',
+    isPopular: true,
+  },
+  {
+    id: 'vulcan',
+    name: 'Vulcan Anti-Cheat',
+    slug: 'vulcan',
+    description: 'Advanced packet-based cheat detection',
+    category: 'moderation',
+    isPopular: true,
+  },
+  {
+    id: 'grim',
+    name: 'Grim Anticheat',
+    slug: 'grim',
+    description: 'Free open-source anticheat for 1.8-1.21',
+    category: 'moderation',
+    isPopular: true,
+  },
+  {
+    id: 'matrix',
+    name: 'Matrix Anti-Cheat',
+    slug: 'matrix',
+    description: 'Configurable anticheat with high customization',
+    category: 'moderation',
+    isPopular: false,
+  },
+  {
+    id: 'nocheatplus',
+    name: 'NoCheatPlus',
+    slug: 'nocheatplus',
+    description: 'Classic free anticheat plugin',
+    category: 'moderation',
+    isPopular: false,
+  },
+
+  // ============================================
+  // CRATES & REWARDS CATEGORY
+  // ============================================
+  {
+    id: 'excellentcrates',
+    name: 'ExcellentCrates',
+    slug: 'excellentcrates',
+    description: 'Advanced free crates with animations',
+    category: 'fun',
+    isPopular: true,
+  },
+  {
+    id: 'crazycrates',
+    name: 'CrazyCrates',
+    slug: 'crazycrates',
+    description: 'Feature-rich crate plugin with previews',
+    category: 'fun',
+    isPopular: true,
+  },
+  {
+    id: 'cosmicvaults',
+    name: 'CosmicVaults',
+    slug: 'cosmicvaults',
+    description: 'Virtual backpacks and storage',
+    category: 'economy',
+    isPopular: false,
+  },
+
+  // ============================================
+  // BACKPACKS & STORAGE
+  // ============================================
+  {
+    id: 'minepacks',
+    name: 'Minepacks',
+    slug: 'minepacks',
+    description: 'Free backpack plugin with customization',
+    category: 'utility',
+    isPopular: true,
+  },
+  {
+    id: 'betterbackpacks',
+    name: 'BetterBackpacks',
+    slug: 'betterbackpacks',
+    description: 'Simple backpack implementation',
+    category: 'utility',
+    isPopular: false,
+  },
+
+  // ============================================
+  // CROSS-PLATFORM / PROXY
+  // ============================================
+  {
+    id: 'geyser',
+    name: 'Geyser',
+    slug: 'geyser',
+    description: 'Allow Bedrock players to join Java servers',
+    category: 'utility',
+    isPopular: true,
+  },
+  {
+    id: 'floodgate',
+    name: 'Floodgate',
+    slug: 'floodgate',
+    description: 'Bedrock authentication for online-mode servers',
+    category: 'utility',
+    isPopular: true,
+  },
+  {
+    id: 'viabackwards',
+    name: 'ViaBackwards',
+    slug: 'viabackwards',
+    description: 'Allow older clients to join newer servers',
+    category: 'utility',
+    isPopular: true,
+  },
+
+  // ============================================
+  // PERFORMANCE & WORLD MANAGEMENT
+  // ============================================
+  {
+    id: 'chunky',
+    name: 'Chunky',
+    slug: 'chunky',
+    description: 'Fast chunk pre-generation',
+    category: 'world',
+    isPopular: true,
+  },
+  {
+    id: 'levelledmobs',
+    name: 'LevelledMobs',
+    slug: 'levelledmobs',
+    description: 'RPG-style mob leveling system',
+    category: 'fun',
+    isPopular: true,
+  },
+  {
+    id: 'farmprotect',
+    name: 'FarmProtect',
+    slug: 'farmprotect',
+    description: 'Stop players from trampling farmland',
+    category: 'protection',
+    isPopular: true,
+  },
+
+  // ============================================
+  // SOCIAL & MISCELLANEOUS
+  // ============================================
+  {
+    id: 'marriagemaster',
+    name: 'Marriage Master',
+    slug: 'marriagemaster',
+    description: 'Marriage system for players',
+    category: 'chat',
+    isPopular: true,
+  },
+  {
+    id: 'friends',
+    name: 'Friends',
+    slug: 'friends',
+    description: 'Friend list and party system',
+    category: 'chat',
+    isPopular: false,
+  },
+  {
+    id: 'ultimateclaims',
+    name: 'UltimateClaims',
+    slug: 'ultimateclaims',
+    description: 'Chunk-based claiming with GUI',
+    category: 'protection',
+    isPopular: false,
+  },
+
+  // ============================================
+  // MORE ECONOMY PLUGINS
+  // ============================================
+  {
+    id: 'coinsengine',
+    name: 'CoinsEngine',
+    slug: 'coinsengine',
+    description: 'Modern multi-currency economy',
+    category: 'economy',
+    isPopular: false,
+  },
+  {
+    id: 'economyshopgui',
+    name: 'EconomyShopGUI',
+    slug: 'economyshopgui',
+    description: 'Simple shop GUI with dynamic pricing',
+    category: 'economy',
+    isPopular: false,
+  },
+  {
+    id: 'tradingcards',
+    name: 'TradingCards',
+    slug: 'tradingcards',
+    description: 'Collectible trading cards from mobs',
+    category: 'fun',
+    isPopular: false,
+  },
+
+  // ============================================
+  // TELEPORTATION & WARPS
+  // ============================================
+  {
+    id: 'advancedteleport',
+    name: 'AdvancedTeleport',
+    slug: 'advancedteleport',
+    description: 'Homes, warps, and teleport requests',
+    category: 'essentials',
+    isPopular: false,
+  },
+  {
+    id: 'betterrtp',
+    name: 'BetterRTP',
+    slug: 'betterrtp',
+    description: 'Random teleport with region support',
+    category: 'utility',
+    isPopular: true,
+  },
+  {
+    id: 'huskhomes',
+    name: 'HuskHomes',
+    slug: 'huskhomes',
+    description: 'Cross-server homes and warps',
+    category: 'essentials',
+    isPopular: false,
+  },
+
+  // ============================================
+  // BOSS & CUSTOM MOBS
+  // ============================================
+  {
+    id: 'elitemobs',
+    name: 'EliteMobs',
+    slug: 'elitemobs',
+    description: 'Elite mobs, dungeons, and boss fights',
+    category: 'fun',
+    isPopular: true,
+  },
+  {
+    id: 'infernalmobs',
+    name: 'InfernalMobs',
+    slug: 'infernalmobs',
+    description: 'Random powered-up mobs with abilities',
+    category: 'fun',
+    isPopular: false,
+  },
+  {
+    id: 'customfishing',
+    name: 'CustomFishing',
+    slug: 'customfishing',
+    description: 'Enhanced fishing mechanics and rewards',
+    category: 'fun',
+    isPopular: false,
+  },
+
+  // ============================================
+  // ENCHANTMENTS & ITEMS
+  // ============================================
+  {
+    id: 'enchantsplus',
+    name: 'EnchantsPlus',
+    slug: 'enchantsplus',
+    description: 'Custom enchantments with GUI',
+    category: 'fun',
+    isPopular: false,
+  },
+  {
+    id: 'itemsadder',
+    name: 'ItemsAdder',
+    slug: 'itemsadder',
+    description: 'Custom items, blocks, mobs, and GUIs',
+    category: 'fun',
+    isPopular: true,
+  },
+  {
+    id: 'oraxen',
+    name: 'Oraxen',
+    slug: 'oraxen',
+    description: 'Custom items with resource pack generation',
+    category: 'fun',
+    isPopular: true,
+  },
+  {
+    id: 'executableitems',
+    name: 'ExecutableItems',
+    slug: 'executableitems',
+    description: 'Items that run commands on use',
+    category: 'fun',
+    isPopular: false,
+  },
+
+  // ============================================
+  // QUESTS & PROGRESSION
+  // ============================================
+  {
+    id: 'quests',
+    name: 'Quests',
+    slug: 'quests',
+    description: 'Quest creation and management',
+    category: 'fun',
+    isPopular: true,
+  },
+  {
+    id: 'betonquest',
+    name: 'BetonQuest',
+    slug: 'betonquest',
+    description: 'Advanced quest scripting system',
+    category: 'fun',
+    isPopular: false,
+  },
+  {
+    id: 'notquests',
+    name: 'NotQuests',
+    slug: 'notquests',
+    description: 'Modern quest system with GUI editor',
+    category: 'fun',
+    isPopular: false,
+  },
+
+  // ============================================
+  // RANKS & PROGRESSION
+  // ============================================
+  {
+    id: 'rankup',
+    name: 'RankUp',
+    slug: 'rankup',
+    description: 'Automatic rank progression',
+    category: 'essentials',
+    isPopular: true,
+  },
+  {
+    id: 'ezrankslite',
+    name: 'EZRanksLite',
+    slug: 'ezrankslite',
+    description: 'Simple rankup ladder system',
+    category: 'essentials',
+    isPopular: false,
+  },
+  {
+    id: 'prestigeplus',
+    name: 'PrestigePlus',
+    slug: 'prestigeplus',
+    description: 'Prestige system for rank ladders',
+    category: 'essentials',
+    isPopular: false,
+  },
 ];
 
 export const pluginsByCategory = plugins.reduce((acc, plugin) => {
