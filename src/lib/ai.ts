@@ -16,7 +16,13 @@ export interface AIConfig {
   enableWebSearch?: boolean;
 }
 
-let config: AIConfig = {};
+// Load API key from environment variable (set in Vercel dashboard)
+const ENV_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string | undefined;
+
+let config: AIConfig = {
+  apiKey: ENV_API_KEY,
+  apiProvider: 'openai',
+};
 
 export function configureAI(newConfig: AIConfig) {
   config = { ...config, ...newConfig };
@@ -679,12 +685,12 @@ async function callAI(prompt: string): Promise<string> {
     throw new Error('No API key configured');
   }
 
-  if (config.apiProvider === 'openai') {
-    return callOpenAI(prompt);
+  if (config.apiProvider === 'anthropic') {
+    return callAnthropic(prompt);
   }
 
-  // Default to Anthropic
-  return callAnthropic(prompt);
+  // Default to OpenAI (gpt-4o-mini - most efficient)
+  return callOpenAI(prompt);
 }
 
 async function callAnthropic(prompt: string): Promise<string> {
@@ -718,7 +724,7 @@ async function callOpenAI(prompt: string): Promise<string> {
       'Authorization': `Bearer ${config.apiKey}`,
     },
     body: JSON.stringify({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4o-mini',
       messages: [{ role: 'user', content: prompt }],
       max_tokens: 1024,
     }),

@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { Settings, Key, Sparkles, Check, X } from 'lucide-react';
+import { useState } from 'react';
+import { Sparkles, Check, Zap, Shield, Brain, AlertCircle } from 'lucide-react';
 import { Modal } from './ui/Modal';
 import { Button, Badge } from './ui';
-import { configureAI, getAIConfig, isAIConfigured, type AIConfig } from '../lib/ai';
+import { isAIConfigured } from '../lib/ai';
 
 interface AISettingsProps {
   isOpen: boolean;
@@ -10,45 +10,16 @@ interface AISettingsProps {
 }
 
 export function AISettings({ isOpen, onClose }: AISettingsProps) {
-  const [apiKey, setApiKey] = useState('');
-  const [provider, setProvider] = useState<'anthropic' | 'openai'>('anthropic');
-  const [enableWebSearch, setEnableWebSearch] = useState(false);
+  const [preferences, setPreferences] = useState({
+    autoSuggestRanks: true,
+    smartPermissions: true,
+  });
   const [saved, setSaved] = useState(false);
-
-  // Load existing config
-  useEffect(() => {
-    const config = getAIConfig();
-    if (config.apiKey) {
-      setApiKey(config.apiKey);
-    }
-    if (config.apiProvider) {
-      setProvider(config.apiProvider);
-    }
-    if (config.enableWebSearch !== undefined) {
-      setEnableWebSearch(config.enableWebSearch);
-    }
-  }, [isOpen]);
+  const aiEnabled = isAIConfigured();
 
   const handleSave = () => {
-    const config: AIConfig = {
-      apiKey: apiKey.trim() || undefined,
-      apiProvider: provider,
-      enableWebSearch,
-    };
-
-    configureAI(config);
-
-    // Store in localStorage for persistence
-    if (apiKey.trim()) {
-      localStorage.setItem('permstack_ai_config', JSON.stringify({
-        apiKey: apiKey.trim(),
-        apiProvider: provider,
-        enableWebSearch,
-      }));
-    } else {
-      localStorage.removeItem('permstack_ai_config');
-    }
-
+    // Save preferences to localStorage
+    localStorage.setItem('permstack_ai_preferences', JSON.stringify(preferences));
     setSaved(true);
     setTimeout(() => {
       setSaved(false);
@@ -56,132 +27,95 @@ export function AISettings({ isOpen, onClose }: AISettingsProps) {
     }, 1000);
   };
 
-  const handleClear = () => {
-    setApiKey('');
-    configureAI({});
-    localStorage.removeItem('permstack_ai_config');
-  };
-
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="AI Settings" size="md">
+    <Modal isOpen={isOpen} onClose={onClose} title="AI Assistant" size="md">
       <div className="space-y-5">
-        <div className="flex items-start gap-3 p-3 bg-primary-500/10 border border-primary-500/30 rounded-lg">
-          <Sparkles className="w-5 h-5 text-primary-400 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm text-white font-medium">Enhanced AI Features</p>
-            <p className="text-xs text-surface-400 mt-1">
-              Adding an API key enables smarter rank detection and plugin permission lookup.
-              Your key is stored locally and never sent to our servers.
-            </p>
+        {/* AI Status */}
+        {aiEnabled ? (
+          <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-primary-500/20 to-purple-500/20 border border-primary-500/30 rounded-lg">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-5 h-5 text-white" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-white font-medium">AI Assistant Active</p>
+                <Badge variant="success" size="sm">Enabled</Badge>
+              </div>
+              <p className="text-xs text-surface-400 mt-1">
+                Powered by GPT-4o-mini to help you create better permission configurations.
+              </p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-start gap-3 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+            <div className="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
+              <AlertCircle className="w-5 h-5 text-yellow-400" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-white font-medium">AI Not Configured</p>
+                <Badge variant="warning" size="sm">Limited</Badge>
+              </div>
+              <p className="text-xs text-surface-400 mt-1">
+                Local pattern matching is still available. AI features require API configuration.
+              </p>
+            </div>
+          </div>
+        )}
 
-        {/* Provider Selection */}
+        {/* Features */}
         <div>
-          <label className="block text-sm font-medium text-surface-300 mb-2">
-            AI Provider
-          </label>
-          <div className="grid grid-cols-2 gap-3">
-            <button
-              onClick={() => setProvider('anthropic')}
-              className={`p-3 rounded-lg border text-left transition-all ${
-                provider === 'anthropic'
-                  ? 'bg-primary-500/10 border-primary-500'
-                  : 'bg-surface-800 border-surface-700 hover:border-surface-600'
-              }`}
-            >
-              <div className="font-medium text-white text-sm">Anthropic (Claude)</div>
-              <div className="text-xs text-surface-400 mt-0.5">Recommended</div>
-            </button>
-            <button
-              onClick={() => setProvider('openai')}
-              className={`p-3 rounded-lg border text-left transition-all ${
-                provider === 'openai'
-                  ? 'bg-primary-500/10 border-primary-500'
-                  : 'bg-surface-800 border-surface-700 hover:border-surface-600'
-              }`}
-            >
-              <div className="font-medium text-white text-sm">OpenAI (GPT)</div>
-              <div className="text-xs text-surface-400 mt-0.5">Alternative</div>
-            </button>
+          <h3 className="text-sm font-medium text-surface-300 mb-3">AI Features</h3>
+          <div className="space-y-3">
+            <FeatureItem
+              icon={Brain}
+              title="Smart Rank Detection"
+              description="Automatically suggests permission levels based on rank names and descriptions"
+              enabled={aiEnabled}
+            />
+            <FeatureItem
+              icon={Zap}
+              title="Plugin Permission Lookup"
+              description="Finds and generates permissions for plugins not in our database"
+              enabled={aiEnabled}
+            />
+            <FeatureItem
+              icon={Shield}
+              title="Risk Assessment"
+              description="Identifies potentially dangerous permissions and suggests safer alternatives"
+              enabled={aiEnabled}
+            />
           </div>
         </div>
 
-        {/* API Key */}
+        {/* Preferences */}
         <div>
-          <label className="block text-sm font-medium text-surface-300 mb-1.5">
-            API Key <span className="text-surface-500">(optional)</span>
-          </label>
-          <div className="relative">
-            <Key className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
-            <input
-              type="password"
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              className="input w-full pl-10 pr-10 font-mono text-sm"
-              placeholder={provider === 'anthropic' ? 'sk-ant-...' : 'sk-...'}
+          <h3 className="text-sm font-medium text-surface-300 mb-3">Preferences</h3>
+          <div className="space-y-3">
+            <PreferenceToggle
+              label="Auto-suggest rank levels"
+              description="Show AI suggestions when adding new ranks"
+              checked={preferences.autoSuggestRanks}
+              onChange={(checked) => setPreferences(p => ({ ...p, autoSuggestRanks: checked }))}
             />
-            {apiKey && (
-              <button
-                onClick={handleClear}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-surface-500 hover:text-white"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
+            <PreferenceToggle
+              label="Smart permission recommendations"
+              description="Get context-aware permission suggestions"
+              checked={preferences.smartPermissions}
+              onChange={(checked) => setPreferences(p => ({ ...p, smartPermissions: checked }))}
+            />
           </div>
-          <p className="text-xs text-surface-500 mt-1">
-            Get your API key from{' '}
-            <a
-              href={provider === 'anthropic' ? 'https://console.anthropic.com/' : 'https://platform.openai.com/api-keys'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-primary-400 hover:underline"
-            >
-              {provider === 'anthropic' ? 'console.anthropic.com' : 'platform.openai.com'}
-            </a>
-          </p>
         </div>
 
-        {/* Web Search Toggle */}
-        <div className="flex items-center justify-between p-3 bg-surface-800 rounded-lg">
-          <div>
-            <p className="text-sm text-white font-medium">Enable Web Search</p>
-            <p className="text-xs text-surface-400 mt-0.5">
-              Search for plugin permissions online (requires backend)
-            </p>
-          </div>
-          <button
-            onClick={() => setEnableWebSearch(!enableWebSearch)}
-            className={`relative w-11 h-6 rounded-full transition-colors ${
-              enableWebSearch ? 'bg-primary-500' : 'bg-surface-600'
-            }`}
-            disabled
-          >
-            <span
-              className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                enableWebSearch ? 'translate-x-5' : ''
-              }`}
-            />
-          </button>
-        </div>
-
-        {/* Status */}
-        <div className="flex items-center gap-2">
-          <Badge variant={isAIConfigured() ? 'success' : 'default'}>
-            {isAIConfigured() ? 'AI Configured' : 'Using Local Detection'}
-          </Badge>
-          {!isAIConfigured() && (
-            <span className="text-xs text-surface-400">
-              Local heuristics will be used for rank detection
-            </span>
-          )}
-        </div>
+        {/* Info */}
+        <p className="text-xs text-surface-500">
+          AI features are provided at no cost. Your data is processed securely and never stored.
+        </p>
 
         {/* Actions */}
         <div className="flex justify-end gap-3 pt-2 border-t border-surface-800">
           <Button variant="secondary" onClick={onClose}>
-            Cancel
+            Close
           </Button>
           <Button onClick={handleSave} disabled={saved}>
             {saved ? (
@@ -190,7 +124,7 @@ export function AISettings({ isOpen, onClose }: AISettingsProps) {
                 Saved!
               </>
             ) : (
-              'Save Settings'
+              'Save Preferences'
             )}
           </Button>
         </div>
@@ -199,38 +133,82 @@ export function AISettings({ isOpen, onClose }: AISettingsProps) {
   );
 }
 
+interface FeatureItemProps {
+  icon: React.ElementType;
+  title: string;
+  description: string;
+  enabled: boolean;
+}
+
+function FeatureItem({ icon: Icon, title, description, enabled }: FeatureItemProps) {
+  return (
+    <div className={`flex items-start gap-3 p-3 rounded-lg ${enabled ? 'bg-surface-800' : 'bg-surface-800/50 opacity-60'}`}>
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${enabled ? 'bg-primary-500/20 text-primary-400' : 'bg-surface-700 text-surface-500'}`}>
+        <Icon className="w-4 h-4" />
+      </div>
+      <div>
+        <p className="text-sm text-white font-medium">{title}</p>
+        <p className="text-xs text-surface-400 mt-0.5">{description}</p>
+      </div>
+      {enabled && (
+        <Check className="w-4 h-4 text-green-400 ml-auto flex-shrink-0" />
+      )}
+    </div>
+  );
+}
+
+interface PreferenceToggleProps {
+  label: string;
+  description: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}
+
+function PreferenceToggle({ label, description, checked, onChange }: PreferenceToggleProps) {
+  return (
+    <div className="flex items-center justify-between p-3 bg-surface-800 rounded-lg">
+      <div>
+        <p className="text-sm text-white font-medium">{label}</p>
+        <p className="text-xs text-surface-400 mt-0.5">{description}</p>
+      </div>
+      <button
+        onClick={() => onChange(!checked)}
+        className={`relative w-11 h-6 rounded-full transition-colors ${
+          checked ? 'bg-primary-500' : 'bg-surface-600'
+        }`}
+      >
+        <span
+          className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
+            checked ? 'translate-x-5' : ''
+          }`}
+        />
+      </button>
+    </div>
+  );
+}
+
 // Button to open AI settings
 export function AISettingsButton({ onClick }: { onClick: () => void }) {
-  const configured = isAIConfigured();
-
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-colors ${
-        configured
-          ? 'border-primary-500/50 bg-primary-500/10 text-primary-400 hover:bg-primary-500/20'
-          : 'border-surface-700 text-surface-400 hover:border-surface-600 hover:text-white'
-      }`}
+      className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-primary-500/50 bg-primary-500/10 text-primary-400 hover:bg-primary-500/20 transition-colors"
     >
-      {configured ? (
-        <Sparkles className="w-4 h-4" />
-      ) : (
-        <Settings className="w-4 h-4" />
-      )}
-      <span className="text-sm">AI {configured ? 'Enabled' : 'Settings'}</span>
+      <Sparkles className="w-4 h-4" />
+      <span className="text-sm">AI Assistant</span>
     </button>
   );
 }
 
-// Initialize AI config from localStorage
+// Initialize AI preferences from localStorage
 export function initializeAIConfig() {
   try {
-    const stored = localStorage.getItem('permstack_ai_config');
+    const stored = localStorage.getItem('permstack_ai_preferences');
     if (stored) {
-      const config = JSON.parse(stored);
-      configureAI(config);
+      // Preferences loaded - could be used elsewhere
+      JSON.parse(stored);
     }
   } catch (error) {
-    console.warn('Failed to load AI config:', error);
+    console.warn('Failed to load AI preferences:', error);
   }
 }

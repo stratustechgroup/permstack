@@ -47,6 +47,7 @@ export const RANK_ORDER: Record<RankLevel, number> = {
 };
 
 export type PluginCategory =
+  | 'permissions'
   | 'essentials'
   | 'protection'
   | 'economy'
@@ -58,6 +59,9 @@ export type PluginCategory =
   | 'gamemodes'
   | 'utility'
   | 'combat';
+
+// Permission plugins should have single selection
+export const SINGLE_SELECT_CATEGORIES: PluginCategory[] = ['permissions'];
 
 export interface Plugin {
   id: string;
