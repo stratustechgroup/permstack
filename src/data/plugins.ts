@@ -1,4 +1,7 @@
-import type { Plugin } from './types';
+import type { Plugin, Gamemode } from './types';
+
+// Helper to create gamemode array
+const gm = (...modes: Gamemode[]): Gamemode[] => modes;
 
 export const plugins: Plugin[] = [
   // ============================================
@@ -11,6 +14,7 @@ export const plugins: Plugin[] = [
     description: 'Modern permissions plugin with web editor and sync',
     category: 'permissions',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'permissionsex',
@@ -19,6 +23,7 @@ export const plugins: Plugin[] = [
     description: 'Classic permissions plugin (legacy, not recommended)',
     category: 'permissions',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'groupmanager',
@@ -27,6 +32,7 @@ export const plugins: Plugin[] = [
     description: 'Simple permissions with inheritance (legacy)',
     category: 'permissions',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'ultrapermissions',
@@ -35,6 +41,7 @@ export const plugins: Plugin[] = [
     description: 'GUI-based permission management with MySQL support',
     category: 'permissions',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'powerfulperms',
@@ -43,6 +50,7 @@ export const plugins: Plugin[] = [
     description: 'BungeeCord-compatible permissions with MySQL',
     category: 'permissions',
     isPopular: false,
+    gamemodes: gm('minigames', 'factions'),
   },
 
   // ============================================
@@ -55,6 +63,7 @@ export const plugins: Plugin[] = [
     description: 'Core server commands: homes, teleports, economy, chat',
     category: 'essentials',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
   {
     id: 'vault',
@@ -63,6 +72,7 @@ export const plugins: Plugin[] = [
     description: 'Economy and permissions API bridge',
     category: 'essentials',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'cmi',
@@ -71,6 +81,7 @@ export const plugins: Plugin[] = [
     description: 'All-in-one server management plugin (270+ commands)',
     category: 'essentials',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
   {
     id: 'placeholderapi',
@@ -79,6 +90,7 @@ export const plugins: Plugin[] = [
     description: 'Unified placeholder system for plugins',
     category: 'essentials',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
 
   // ============================================
@@ -91,6 +103,7 @@ export const plugins: Plugin[] = [
     description: 'Region protection and flag management',
     category: 'protection',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'minigames'),
   },
   {
     id: 'griefprevention',
@@ -99,6 +112,7 @@ export const plugins: Plugin[] = [
     description: 'Claim-based land protection with golden shovel',
     category: 'protection',
     isPopular: true,
+    gamemodes: gm('survival'),
   },
   {
     id: 'towny',
@@ -107,6 +121,7 @@ export const plugins: Plugin[] = [
     description: 'Town and nation management with land claiming',
     category: 'protection',
     isPopular: true,
+    gamemodes: gm('survival'),
   },
   {
     id: 'residence',
@@ -115,6 +130,7 @@ export const plugins: Plugin[] = [
     description: 'Self-serve area protection system',
     category: 'protection',
     isPopular: false,
+    gamemodes: gm('survival'),
   },
   {
     id: 'griefdefender',
@@ -123,6 +139,7 @@ export const plugins: Plugin[] = [
     description: 'Advanced claim and flag protection system',
     category: 'protection',
     isPopular: false,
+    gamemodes: gm('survival'),
   },
   {
     id: 'lands',
@@ -131,6 +148,7 @@ export const plugins: Plugin[] = [
     description: 'Modern land claiming with GUI and wars',
     category: 'protection',
     isPopular: true,
+    gamemodes: gm('survival'),
   },
 
   // ============================================
@@ -143,6 +161,7 @@ export const plugins: Plugin[] = [
     description: 'Block logging, rollback, and restore',
     category: 'moderation',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
   {
     id: 'litebans',
@@ -151,6 +170,7 @@ export const plugins: Plugin[] = [
     description: 'Cross-server ban management',
     category: 'moderation',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'advancedban',
@@ -159,6 +179,7 @@ export const plugins: Plugin[] = [
     description: 'Ban, mute, warn, and kick management',
     category: 'moderation',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'staffplus',
@@ -167,6 +188,7 @@ export const plugins: Plugin[] = [
     description: 'Staff tools, freeze, vanish, reports',
     category: 'moderation',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'premiumvanish',
@@ -175,6 +197,7 @@ export const plugins: Plugin[] = [
     description: 'Advanced vanish with many features',
     category: 'moderation',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'openinv',
@@ -183,6 +206,7 @@ export const plugins: Plugin[] = [
     description: 'View and edit player inventories',
     category: 'moderation',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
 
   // ============================================
@@ -195,6 +219,7 @@ export const plugins: Plugin[] = [
     description: 'Job-based economy system',
     category: 'economy',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock'),
   },
   {
     id: 'shopgui',
@@ -203,6 +228,7 @@ export const plugins: Plugin[] = [
     description: 'GUI-based shop system',
     category: 'economy',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
   {
     id: 'chestshop',
@@ -211,6 +237,7 @@ export const plugins: Plugin[] = [
     description: 'Sign-based player shops',
     category: 'economy',
     isPopular: true,
+    gamemodes: gm('survival'),
   },
   {
     id: 'quickshop',
@@ -219,6 +246,7 @@ export const plugins: Plugin[] = [
     description: 'Easy chest-based player shops',
     category: 'economy',
     isPopular: true,
+    gamemodes: gm('survival'),
   },
   {
     id: 'playervaults',
@@ -227,6 +255,7 @@ export const plugins: Plugin[] = [
     description: 'Virtual storage vaults for players',
     category: 'economy',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
   {
     id: 'auctionhouse',
@@ -235,6 +264,7 @@ export const plugins: Plugin[] = [
     description: 'Global auction system for items',
     category: 'economy',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
   {
     id: 'tokenmanager',
@@ -243,6 +273,7 @@ export const plugins: Plugin[] = [
     description: 'Virtual token economy system',
     category: 'economy',
     isPopular: false,
+    gamemodes: gm('skyblock', 'factions', 'minigames'),
   },
 
   // ============================================
@@ -255,6 +286,7 @@ export const plugins: Plugin[] = [
     description: 'In-game map editor for builders and admins',
     category: 'world',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'fawe',
@@ -263,6 +295,7 @@ export const plugins: Plugin[] = [
     description: 'Faster WorldEdit with async operations',
     category: 'world',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'multiverse',
@@ -271,6 +304,7 @@ export const plugins: Plugin[] = [
     description: 'Multiple world management',
     category: 'world',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'minigames'),
   },
   {
     id: 'voidgen',
@@ -279,6 +313,7 @@ export const plugins: Plugin[] = [
     description: 'Void world generator',
     category: 'world',
     isPopular: false,
+    gamemodes: gm('skyblock', 'minigames'),
   },
 
   // ============================================
@@ -291,6 +326,7 @@ export const plugins: Plugin[] = [
     description: 'RPG skills and leveling system',
     category: 'fun',
     isPopular: true,
+    gamemodes: gm('survival', 'factions'),
   },
   {
     id: 'aureliumskills',
@@ -299,6 +335,7 @@ export const plugins: Plugin[] = [
     description: 'Modern RPG skills plugin',
     category: 'fun',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock'),
   },
   {
     id: 'mythicmobs',
@@ -307,6 +344,7 @@ export const plugins: Plugin[] = [
     description: 'Custom mob creation and scripting',
     category: 'fun',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
   {
     id: 'citizens',
@@ -315,6 +353,7 @@ export const plugins: Plugin[] = [
     description: 'NPC creation and management',
     category: 'fun',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'headdb',
@@ -323,6 +362,7 @@ export const plugins: Plugin[] = [
     description: 'Database of decorative heads',
     category: 'fun',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock'),
   },
   {
     id: 'crazyenchantments',
@@ -331,6 +371,7 @@ export const plugins: Plugin[] = [
     description: 'Custom enchantments system',
     category: 'fun',
     isPopular: false,
+    gamemodes: gm('factions', 'skyblock'),
   },
   {
     id: 'ecoenchants',
@@ -339,6 +380,7 @@ export const plugins: Plugin[] = [
     description: 'Modern custom enchantments',
     category: 'fun',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
 
   // ============================================
@@ -351,6 +393,7 @@ export const plugins: Plugin[] = [
     description: 'Discord-Minecraft chat bridge',
     category: 'chat',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'chatcontrol',
@@ -359,6 +402,7 @@ export const plugins: Plugin[] = [
     description: 'Chat management and formatting',
     category: 'chat',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'venturechat',
@@ -367,6 +411,7 @@ export const plugins: Plugin[] = [
     description: 'Advanced chat channels system',
     category: 'chat',
     isPopular: false,
+    gamemodes: gm('survival', 'factions'),
   },
   {
     id: 'parties',
@@ -375,6 +420,7 @@ export const plugins: Plugin[] = [
     description: 'Party system for players',
     category: 'chat',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
 
   // ============================================
@@ -387,6 +433,7 @@ export const plugins: Plugin[] = [
     description: 'Tablist and nametag customization',
     category: 'display',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'decentholograms',
@@ -395,6 +442,7 @@ export const plugins: Plugin[] = [
     description: 'Hologram creation and management',
     category: 'display',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'holographicdisplays',
@@ -403,6 +451,7 @@ export const plugins: Plugin[] = [
     description: 'Classic hologram plugin',
     category: 'display',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'deluxemenus',
@@ -411,6 +460,7 @@ export const plugins: Plugin[] = [
     description: 'Custom GUI menu creation',
     category: 'display',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'ajleaderboards',
@@ -419,6 +469,7 @@ export const plugins: Plugin[] = [
     description: 'Hologram leaderboards',
     category: 'display',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
 
   // ============================================
@@ -431,6 +482,7 @@ export const plugins: Plugin[] = [
     description: 'Island management (SkyBlock, AcidIsland, etc)',
     category: 'gamemodes',
     isPopular: true,
+    gamemodes: gm('skyblock'),
   },
   {
     id: 'superiorskyblock',
@@ -439,6 +491,7 @@ export const plugins: Plugin[] = [
     description: 'Feature-rich skyblock plugin',
     category: 'gamemodes',
     isPopular: true,
+    gamemodes: gm('skyblock'),
   },
   {
     id: 'factionsuuid',
@@ -447,6 +500,7 @@ export const plugins: Plugin[] = [
     description: 'Classic factions gameplay',
     category: 'gamemodes',
     isPopular: true,
+    gamemodes: gm('factions'),
   },
   {
     id: 'saberfactions',
@@ -455,6 +509,7 @@ export const plugins: Plugin[] = [
     description: 'Modern factions fork',
     category: 'gamemodes',
     isPopular: false,
+    gamemodes: gm('factions'),
   },
 
   // ============================================
@@ -467,6 +522,7 @@ export const plugins: Plugin[] = [
     description: 'Login and registration system',
     category: 'utility',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'viaversion',
@@ -475,6 +531,7 @@ export const plugins: Plugin[] = [
     description: 'Allow newer clients to join',
     category: 'utility',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'chestsort',
@@ -483,6 +540,7 @@ export const plugins: Plugin[] = [
     description: 'Automatic chest sorting',
     category: 'utility',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock'),
   },
   {
     id: 'silkspawners',
@@ -491,6 +549,7 @@ export const plugins: Plugin[] = [
     description: 'Pick up and place spawners',
     category: 'utility',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
   {
     id: 'clearlag',
@@ -499,6 +558,7 @@ export const plugins: Plugin[] = [
     description: 'Entity and lag management',
     category: 'utility',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
   {
     id: 'dynmap',
@@ -507,6 +567,7 @@ export const plugins: Plugin[] = [
     description: 'Web-based live map',
     category: 'utility',
     isPopular: true,
+    gamemodes: gm('survival', 'factions'),
   },
   {
     id: 'votingplugin',
@@ -515,6 +576,7 @@ export const plugins: Plugin[] = [
     description: 'Server voting rewards system',
     category: 'utility',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
 
   // ============================================
@@ -527,6 +589,7 @@ export const plugins: Plugin[] = [
     description: 'Combat tagging and logging prevention',
     category: 'combat',
     isPopular: true,
+    gamemodes: gm('survival', 'factions'),
   },
   {
     id: 'pvpmanager',
@@ -535,6 +598,7 @@ export const plugins: Plugin[] = [
     description: 'PvP toggle and protection',
     category: 'combat',
     isPopular: false,
+    gamemodes: gm('survival'),
   },
 
   // ============================================
@@ -547,6 +611,7 @@ export const plugins: Plugin[] = [
     description: 'Popular BedWars minigame plugin',
     category: 'gamemodes',
     isPopular: true,
+    gamemodes: gm('minigames'),
   },
   {
     id: 'screamingbedwars',
@@ -555,6 +620,7 @@ export const plugins: Plugin[] = [
     description: 'Flexible BedWars with CakeWars/EggWars variants',
     category: 'gamemodes',
     isPopular: true,
+    gamemodes: gm('minigames'),
   },
   {
     id: 'skywars',
@@ -563,6 +629,7 @@ export const plugins: Plugin[] = [
     description: 'Classic SkyWars minigame',
     category: 'gamemodes',
     isPopular: true,
+    gamemodes: gm('minigames'),
   },
   {
     id: 'murdermystery',
@@ -571,6 +638,7 @@ export const plugins: Plugin[] = [
     description: 'Murder mystery minigame',
     category: 'gamemodes',
     isPopular: false,
+    gamemodes: gm('minigames'),
   },
   {
     id: 'buildbattle',
@@ -579,6 +647,7 @@ export const plugins: Plugin[] = [
     description: 'Competitive building minigame',
     category: 'gamemodes',
     isPopular: false,
+    gamemodes: gm('minigames'),
   },
 
   // ============================================
@@ -591,6 +660,7 @@ export const plugins: Plugin[] = [
     description: 'Popular anticheat with Bedrock/Geyser support',
     category: 'moderation',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'vulcan',
@@ -599,6 +669,7 @@ export const plugins: Plugin[] = [
     description: 'Advanced packet-based cheat detection',
     category: 'moderation',
     isPopular: true,
+    gamemodes: gm('factions', 'minigames'),
   },
   {
     id: 'grim',
@@ -607,6 +678,7 @@ export const plugins: Plugin[] = [
     description: 'Free open-source anticheat for 1.8-1.21',
     category: 'moderation',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'matrix',
@@ -615,6 +687,7 @@ export const plugins: Plugin[] = [
     description: 'Configurable anticheat with high customization',
     category: 'moderation',
     isPopular: false,
+    gamemodes: gm('factions', 'minigames'),
   },
   {
     id: 'nocheatplus',
@@ -623,6 +696,7 @@ export const plugins: Plugin[] = [
     description: 'Classic free anticheat plugin',
     category: 'moderation',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
 
   // ============================================
@@ -635,6 +709,7 @@ export const plugins: Plugin[] = [
     description: 'Advanced free crates with animations',
     category: 'fun',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
   {
     id: 'crazycrates',
@@ -643,6 +718,7 @@ export const plugins: Plugin[] = [
     description: 'Feature-rich crate plugin with previews',
     category: 'fun',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
   {
     id: 'cosmicvaults',
@@ -651,6 +727,7 @@ export const plugins: Plugin[] = [
     description: 'Virtual backpacks and storage',
     category: 'economy',
     isPopular: false,
+    gamemodes: gm('skyblock', 'factions'),
   },
 
   // ============================================
@@ -663,6 +740,7 @@ export const plugins: Plugin[] = [
     description: 'Free backpack plugin with customization',
     category: 'utility',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock'),
   },
   {
     id: 'betterbackpacks',
@@ -671,6 +749,7 @@ export const plugins: Plugin[] = [
     description: 'Simple backpack implementation',
     category: 'utility',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock'),
   },
 
   // ============================================
@@ -683,6 +762,7 @@ export const plugins: Plugin[] = [
     description: 'Allow Bedrock players to join Java servers',
     category: 'utility',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'floodgate',
@@ -691,6 +771,7 @@ export const plugins: Plugin[] = [
     description: 'Bedrock authentication for online-mode servers',
     category: 'utility',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
   {
     id: 'viabackwards',
@@ -699,6 +780,7 @@ export const plugins: Plugin[] = [
     description: 'Allow older clients to join newer servers',
     category: 'utility',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
   },
 
   // ============================================
@@ -711,6 +793,7 @@ export const plugins: Plugin[] = [
     description: 'Fast chunk pre-generation',
     category: 'world',
     isPopular: true,
+    gamemodes: gm('survival', 'factions'),
   },
   {
     id: 'levelledmobs',
@@ -719,6 +802,7 @@ export const plugins: Plugin[] = [
     description: 'RPG-style mob leveling system',
     category: 'fun',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock'),
   },
   {
     id: 'farmprotect',
@@ -727,6 +811,7 @@ export const plugins: Plugin[] = [
     description: 'Stop players from trampling farmland',
     category: 'protection',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock'),
   },
 
   // ============================================
@@ -739,6 +824,7 @@ export const plugins: Plugin[] = [
     description: 'Marriage system for players',
     category: 'chat',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock'),
   },
   {
     id: 'friends',
@@ -747,6 +833,7 @@ export const plugins: Plugin[] = [
     description: 'Friend list and party system',
     category: 'chat',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock', 'minigames'),
   },
   {
     id: 'ultimateclaims',
@@ -755,6 +842,7 @@ export const plugins: Plugin[] = [
     description: 'Chunk-based claiming with GUI',
     category: 'protection',
     isPopular: false,
+    gamemodes: gm('survival'),
   },
 
   // ============================================
@@ -767,6 +855,7 @@ export const plugins: Plugin[] = [
     description: 'Modern multi-currency economy',
     category: 'economy',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock', 'minigames'),
   },
   {
     id: 'economyshopgui',
@@ -775,6 +864,7 @@ export const plugins: Plugin[] = [
     description: 'Simple shop GUI with dynamic pricing',
     category: 'economy',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock'),
   },
   {
     id: 'tradingcards',
@@ -783,6 +873,7 @@ export const plugins: Plugin[] = [
     description: 'Collectible trading cards from mobs',
     category: 'fun',
     isPopular: false,
+    gamemodes: gm('survival'),
   },
 
   // ============================================
@@ -795,6 +886,7 @@ export const plugins: Plugin[] = [
     description: 'Homes, warps, and teleport requests',
     category: 'essentials',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock'),
   },
   {
     id: 'betterrtp',
@@ -803,6 +895,7 @@ export const plugins: Plugin[] = [
     description: 'Random teleport with region support',
     category: 'utility',
     isPopular: true,
+    gamemodes: gm('survival'),
   },
   {
     id: 'huskhomes',
@@ -811,6 +904,7 @@ export const plugins: Plugin[] = [
     description: 'Cross-server homes and warps',
     category: 'essentials',
     isPopular: false,
+    gamemodes: gm('minigames'),
   },
 
   // ============================================
@@ -823,6 +917,7 @@ export const plugins: Plugin[] = [
     description: 'Elite mobs, dungeons, and boss fights',
     category: 'fun',
     isPopular: true,
+    gamemodes: gm('survival'),
   },
   {
     id: 'infernalmobs',
@@ -831,6 +926,7 @@ export const plugins: Plugin[] = [
     description: 'Random powered-up mobs with abilities',
     category: 'fun',
     isPopular: false,
+    gamemodes: gm('survival'),
   },
   {
     id: 'customfishing',
@@ -839,6 +935,7 @@ export const plugins: Plugin[] = [
     description: 'Enhanced fishing mechanics and rewards',
     category: 'fun',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock'),
   },
 
   // ============================================
@@ -851,6 +948,7 @@ export const plugins: Plugin[] = [
     description: 'Custom enchantments with GUI',
     category: 'fun',
     isPopular: false,
+    gamemodes: gm('survival', 'factions'),
   },
   {
     id: 'itemsadder',
@@ -859,6 +957,7 @@ export const plugins: Plugin[] = [
     description: 'Custom items, blocks, mobs, and GUIs',
     category: 'fun',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock'),
   },
   {
     id: 'oraxen',
@@ -867,6 +966,7 @@ export const plugins: Plugin[] = [
     description: 'Custom items with resource pack generation',
     category: 'fun',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock'),
   },
   {
     id: 'executableitems',
@@ -875,6 +975,7 @@ export const plugins: Plugin[] = [
     description: 'Items that run commands on use',
     category: 'fun',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
 
   // ============================================
@@ -887,6 +988,7 @@ export const plugins: Plugin[] = [
     description: 'Quest creation and management',
     category: 'fun',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock'),
   },
   {
     id: 'betonquest',
@@ -895,6 +997,7 @@ export const plugins: Plugin[] = [
     description: 'Advanced quest scripting system',
     category: 'fun',
     isPopular: false,
+    gamemodes: gm('survival'),
   },
   {
     id: 'notquests',
@@ -903,6 +1006,7 @@ export const plugins: Plugin[] = [
     description: 'Modern quest system with GUI editor',
     category: 'fun',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock'),
   },
 
   // ============================================
@@ -915,6 +1019,7 @@ export const plugins: Plugin[] = [
     description: 'Automatic rank progression',
     category: 'essentials',
     isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
   },
   {
     id: 'ezrankslite',
@@ -923,6 +1028,7 @@ export const plugins: Plugin[] = [
     description: 'Simple rankup ladder system',
     category: 'essentials',
     isPopular: false,
+    gamemodes: gm('survival', 'skyblock'),
   },
   {
     id: 'prestigeplus',
@@ -931,6 +1037,7 @@ export const plugins: Plugin[] = [
     description: 'Prestige system for rank ladders',
     category: 'essentials',
     isPopular: false,
+    gamemodes: gm('skyblock', 'factions'),
   },
 ];
 
@@ -939,6 +1046,17 @@ export const pluginsByCategory = plugins.reduce((acc, plugin) => {
     acc[plugin.category] = [];
   }
   acc[plugin.category].push(plugin);
+  return acc;
+}, {} as Record<string, Plugin[]>);
+
+export const pluginsByGamemode = plugins.reduce((acc, plugin) => {
+  const modes = plugin.gamemodes || ['all'];
+  modes.forEach(mode => {
+    if (!acc[mode]) {
+      acc[mode] = [];
+    }
+    acc[mode].push(plugin);
+  });
   return acc;
 }, {} as Record<string, Plugin[]>);
 

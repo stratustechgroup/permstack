@@ -14,7 +14,7 @@ import {
 import { Button } from './components/ui';
 import { TermsOfService, PrivacyPolicy, AcceptableUsePolicy } from './pages';
 import { rankTemplates, popularPlugins } from './data';
-import type { ServerType, Rank } from './data';
+import type { ServerType, Rank, Gamemode } from './data';
 import './index.css';
 
 type Step = 'hero' | 'server' | 'plugins' | 'ranks' | 'output';
@@ -24,6 +24,7 @@ function App() {
   const [step, setStep] = useState<Step>('hero');
   const [legalPage, setLegalPage] = useState<LegalPage>(null);
   const [serverType, setServerType] = useState<ServerType | null>(null);
+  const [gamemode, setGamemode] = useState<Gamemode>('all');
   const [selectedPlugins, setSelectedPlugins] = useState<string[]>(
     popularPlugins.map((p) => p.id)
   );
@@ -48,6 +49,7 @@ function App() {
   const handleHome = () => {
     setStep('hero');
     setServerType(null);
+    setGamemode('all');
     setSelectedPlugins(popularPlugins.map((p) => p.id));
     setSelectedTemplate('standard');
     setRanks(rankTemplates[0].ranks);
@@ -210,7 +212,7 @@ function App() {
               </div>
             </div>
 
-            <div className="max-w-5xl mx-auto px-4 py-12">
+            <div className="max-w-7xl mx-auto px-4 py-12">
               {/* Progress indicator */}
               <div className="mb-12">
                 <div className="flex items-center justify-between">
@@ -261,10 +263,20 @@ function App() {
               {/* Step content */}
               <div className="mb-12">
                 {step === 'server' && (
-                  <ServerTypeSelector value={serverType} onChange={setServerType} />
+                  <ServerTypeSelector
+                    value={serverType}
+                    gamemode={gamemode}
+                    onChange={setServerType}
+                    onGamemodeChange={setGamemode}
+                  />
                 )}
                 {step === 'plugins' && (
-                  <PluginSelector value={selectedPlugins} onChange={setSelectedPlugins} />
+                  <PluginSelector
+                    value={selectedPlugins}
+                    onChange={setSelectedPlugins}
+                    gamemode={gamemode}
+                    onGamemodeChange={setGamemode}
+                  />
                 )}
                 {step === 'ranks' && (
                   <RankBuilder

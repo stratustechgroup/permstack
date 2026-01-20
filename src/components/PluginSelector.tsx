@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import { Search, Check, Plus, AlertCircle, Package } from 'lucide-react';
+import { Search, Check, Plus, AlertCircle, Package, ChevronDown, Star } from 'lucide-react';
 import { Card, Button, Badge } from './ui';
 import { PluginSearchModal } from './PluginSearchModal';
 import { RequestPluginModal } from './RequestPluginModal';
-import { plugins, pluginsByCategory } from '../data';
+import { plugins, pluginsByCategory, GAMEMODE_INFO } from '../data';
 import { SINGLE_SELECT_CATEGORIES } from '../data/types';
-import type { Plugin, PermissionNode, PluginCategory } from '../data/types';
+import type { Plugin, PermissionNode, PluginCategory, Gamemode } from '../data/types';
 
 interface PluginSelectorProps {
   value: string[];
   onChange: (value: string[]) => void;
+  gamemode: Gamemode;
+  onGamemodeChange: (gamemode: Gamemode) => void;
 }
 
 const categoryLabels: Record<string, string> = {
@@ -43,17 +45,28 @@ const categoryOrder: PluginCategory[] = [
   'combat',
 ];
 
-export function PluginSelector({ value, onChange }: PluginSelectorProps) {
+type SortOption = 'category' | 'name' | 'relevance';
+
+export function PluginSelector({ value, onChange, gamemode, onGamemodeChange }: PluginSelectorProps) {
   const [search, setSearch] = useState('');
   const [showSearchModal, setShowSearchModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [customPlugins, setCustomPlugins] = useState<Plugin[]>([]);
+  const [sortBy, setSortBy] = useState<SortOption>('relevance');
+  const [showSortMenu, setShowSortMenu] = useState(false);
 
   const allPlugins = [...plugins, ...customPlugins];
 
   const handleAddCustomPlugin = (plugin: Plugin, _permissions: PermissionNode[]) => {
     setCustomPlugins((prev) => [...prev, plugin]);
     onChange([...value, plugin.id]);
+  };
+
+  // Check if plugin is relevant for current gamemode
+  const isRelevantForGamemode = (plugin: Plugin): boolean => {
+    if (gamemode === 'all') return true;
+    if (!plugin.gamemodes) return true;
+    return plugin.gamemodes.includes(gamemode);
   };
 
   const filteredPlugins = allPlugins.filter(
@@ -109,6 +122,27 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
   // Get ordered categories that have plugins
   const categories = categoryOrder.filter(cat => pluginsByCategory[cat]?.length > 0);
 
+  // Sort plugins based on current sort option
+  const getSortedPlugins = (pluginList: Plugin[]) => {
+    const sorted = [...pluginList];
+
+    switch (sortBy) {
+      case 'name':
+        return sorted.sort((a, b) => a.name.localeCompare(b.name));
+      case 'relevance':
+        // Sort by: relevant first, then by popularity, then by name
+        return sorted.sort((a, b) => {
+          const aRelevant = isRelevantForGamemode(a);
+          const bRelevant = isRelevantForGamemode(b);
+          if (aRelevant !== bRelevant) return aRelevant ? -1 : 1;
+          if (a.isPopular !== b.isPopular) return a.isPopular ? -1 : 1;
+          return a.name.localeCompare(b.name);
+        });
+      default:
+        return sorted;
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -129,6 +163,59 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
             <Package className="w-4 h-4 mr-1" />
             Request Plugin
           </Button>
+        </div>
+      </div>
+
+      {/* Filters Row */}
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Gamemode Filter */}
+        <div className="flex flex-wrap gap-2">
+          {(Object.entries(GAMEMODE_INFO) as [Gamemode, { name: string; description: string }][]).map(([id, info]) => (
+            <button
+              key={id}
+              onClick={() => onGamemodeChange(id)}
+              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${
+                gamemode === id
+                  ? 'bg-primary-500 text-white'
+                  : 'bg-surface-800 text-surface-400 hover:text-white hover:bg-surface-700'
+              }`}
+            >
+              {info.name}
+            </button>
+          ))}
+        </div>
+
+        {/* Sort Dropdown */}
+        <div className="relative ml-auto">
+          <button
+            onClick={() => setShowSortMenu(!showSortMenu)}
+            className="flex items-center gap-2 px-3 py-1.5 bg-surface-800 rounded-lg text-sm text-surface-400 hover:text-white transition-colors"
+          >
+            Sort: {sortBy === 'relevance' ? 'Relevance' : sortBy === 'name' ? 'Name' : 'Category'}
+            <ChevronDown className="w-4 h-4" />
+          </button>
+          {showSortMenu && (
+            <div className="absolute right-0 mt-1 w-40 bg-surface-800 border border-surface-700 rounded-lg shadow-lg z-10">
+              {[
+                { id: 'relevance', label: 'Relevance' },
+                { id: 'name', label: 'Name' },
+                { id: 'category', label: 'Category' },
+              ].map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => {
+                    setSortBy(option.id as SortOption);
+                    setShowSortMenu(false);
+                  }}
+                  className={`w-full px-3 py-2 text-left text-sm hover:bg-surface-700 first:rounded-t-lg last:rounded-b-lg ${
+                    sortBy === option.id ? 'text-primary-400' : 'text-surface-300'
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -161,22 +248,25 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
 
       {/* Plugin grid */}
       {search ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {filteredPlugins.map((plugin) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+          {getSortedPlugins(filteredPlugins).map((plugin) => (
             <PluginCard
               key={plugin.id}
               plugin={plugin}
               selected={value.includes(plugin.id)}
               onToggle={() => togglePlugin(plugin.id)}
               isSingleSelect={isSingleSelectCategory(plugin.category)}
+              isRelevant={isRelevantForGamemode(plugin)}
+              showRelevance={gamemode !== 'all'}
             />
           ))}
         </div>
-      ) : (
+      ) : sortBy === 'category' ? (
         <div className="space-y-8">
           {categories.map((category) => {
             const isSingle = isSingleSelectCategory(category);
             const selectedInCategory = getSelectedForCategory(category);
+            const categoryPlugins = getSortedPlugins(pluginsByCategory[category] || []);
 
             return (
               <div key={category}>
@@ -200,8 +290,8 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {pluginsByCategory[category].map((plugin) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  {categoryPlugins.map((plugin) => (
                     <PluginCard
                       key={plugin.id}
                       plugin={plugin}
@@ -209,6 +299,8 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
                       onToggle={() => togglePlugin(plugin.id)}
                       isSingleSelect={isSingle}
                       isDisabledBySelection={isSingle && selectedInCategory !== null && selectedInCategory !== plugin.id}
+                      isRelevant={isRelevantForGamemode(plugin)}
+                      showRelevance={gamemode !== 'all'}
                     />
                   ))}
                 </div>
@@ -216,15 +308,47 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
             );
           })}
         </div>
+      ) : (
+        // Flat list sorted by relevance or name
+        <div>
+          {gamemode !== 'all' && sortBy === 'relevance' && (
+            <div className="mb-4 p-3 bg-primary-500/10 border border-primary-500/30 rounded-lg">
+              <p className="text-sm text-primary-300">
+                <Star className="w-4 h-4 inline mr-1" />
+                Showing plugins most relevant to <strong>{GAMEMODE_INFO[gamemode].name}</strong> first
+              </p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+            {getSortedPlugins(allPlugins).map((plugin) => {
+              const isSingle = isSingleSelectCategory(plugin.category);
+              const selectedInCategory = getSelectedForCategory(plugin.category);
+
+              return (
+                <PluginCard
+                  key={plugin.id}
+                  plugin={plugin}
+                  selected={value.includes(plugin.id)}
+                  onToggle={() => togglePlugin(plugin.id)}
+                  isSingleSelect={isSingle}
+                  isDisabledBySelection={isSingle && selectedInCategory !== null && selectedInCategory !== plugin.id}
+                  isRelevant={isRelevantForGamemode(plugin)}
+                  showRelevance={gamemode !== 'all'}
+                />
+              );
+            })}
+          </div>
+        </div>
       )}
 
       {/* Custom plugins section */}
-      {customPlugins.length > 0 && !search && (
+      {customPlugins.length > 0 && !search && sortBy === 'category' && (
         <div>
           <h3 className="text-sm font-medium text-surface-400 uppercase tracking-wider mb-3">
             Custom Plugins
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
             {customPlugins.map((plugin) => (
               <PluginCard
                 key={plugin.id}
@@ -232,6 +356,8 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
                 selected={value.includes(plugin.id)}
                 onToggle={() => togglePlugin(plugin.id)}
                 isSingleSelect={false}
+                isRelevant={true}
+                showRelevance={false}
               />
             ))}
           </div>
@@ -261,15 +387,19 @@ interface PluginCardProps {
   onToggle: () => void;
   isSingleSelect: boolean;
   isDisabledBySelection?: boolean;
+  isRelevant: boolean;
+  showRelevance: boolean;
 }
 
-function PluginCard({ plugin, selected, onToggle, isSingleSelect, isDisabledBySelection }: PluginCardProps) {
+function PluginCard({ plugin, selected, onToggle, isSingleSelect, isDisabledBySelection, isRelevant, showRelevance }: PluginCardProps) {
   return (
     <Card
       hoverable={!isDisabledBySelection}
       selected={selected}
       onClick={isDisabledBySelection ? undefined : onToggle}
-      className={`flex items-start gap-3 p-4 ${isDisabledBySelection ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+      className={`flex items-start gap-3 p-4 ${isDisabledBySelection ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'} ${
+        showRelevance && !isRelevant ? 'opacity-60' : ''
+      }`}
     >
       <div
         className={`flex-shrink-0 w-5 h-5 flex items-center justify-center transition-colors ${
@@ -299,8 +429,11 @@ function PluginCard({ plugin, selected, onToggle, isSingleSelect, isDisabledBySe
           <h4 className="font-medium text-white truncate">{plugin.name}</h4>
           {plugin.isPopular && (
             <span className="text-xs bg-primary-500/20 text-primary-400 px-1.5 py-0.5 rounded">
-              Recommended
+              Popular
             </span>
+          )}
+          {showRelevance && isRelevant && (
+            <Star className="w-3 h-3 text-yellow-400 flex-shrink-0" />
           )}
         </div>
         <p className="text-sm text-surface-400 line-clamp-2">{plugin.description}</p>
