@@ -1,12 +1,13 @@
-import { Card } from './ui';
-import { serverTypes, GAMEMODE_INFO } from '../data';
+import { Upload } from 'lucide-react';
+import { Card, Button } from './ui';
+import { serverTypes } from '../data';
 import type { ServerType, Gamemode } from '../data';
 
 interface ServerTypeSelectorProps {
   value: ServerType | null;
-  gamemode: Gamemode;
   onChange: (value: ServerType) => void;
   onGamemodeChange: (gamemode: Gamemode) => void;
+  onImportClick: () => void;
 }
 
 // Map server types to default gamemodes
@@ -20,7 +21,7 @@ const serverTypeToGamemode: Record<ServerType, Gamemode> = {
   custom: 'all',
 };
 
-export function ServerTypeSelector({ value, gamemode, onChange, onGamemodeChange }: ServerTypeSelectorProps) {
+export function ServerTypeSelector({ value, onChange, onGamemodeChange, onImportClick }: ServerTypeSelectorProps) {
   const handleServerTypeChange = (type: ServerType) => {
     onChange(type);
     // Auto-select corresponding gamemode
@@ -28,7 +29,21 @@ export function ServerTypeSelector({ value, gamemode, onChange, onGamemodeChange
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
+      {/* Import Existing Config */}
+      <div className="flex items-center justify-between p-4 bg-surface-800/50 border border-surface-700 rounded-xl">
+        <div>
+          <h3 className="text-white font-medium">Have an existing config?</h3>
+          <p className="text-sm text-surface-400">
+            Import your LuckPerms, GroupManager, or PermissionsEx config to get started
+          </p>
+        </div>
+        <Button variant="secondary" size="sm" onClick={onImportClick}>
+          <Upload className="w-4 h-4 mr-2" />
+          Import Config
+        </Button>
+      </div>
+
       {/* Server Type Selection */}
       <div className="space-y-4">
         <div>
@@ -54,34 +69,6 @@ export function ServerTypeSelector({ value, gamemode, onChange, onGamemodeChange
           ))}
         </div>
       </div>
-
-      {/* Gamemode Filter Selection */}
-      {value && (
-        <div className="space-y-4 pt-4 border-t border-surface-800">
-          <div>
-            <h3 className="text-lg font-medium text-white mb-1">Plugin Filter</h3>
-            <p className="text-surface-400 text-sm">
-              Filter plugins by gamemode to see the most relevant options first.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            {(Object.entries(GAMEMODE_INFO) as [Gamemode, { name: string; description: string }][]).map(([id, info]) => (
-              <button
-                key={id}
-                onClick={() => onGamemodeChange(id)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  gamemode === id
-                    ? 'bg-primary-500 text-white'
-                    : 'bg-surface-800 text-surface-400 hover:text-white hover:bg-surface-700'
-                }`}
-              >
-                {info.name}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
