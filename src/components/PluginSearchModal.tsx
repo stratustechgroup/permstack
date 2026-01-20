@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Search, Loader2, Plus, AlertCircle, Sparkles, Check, Database, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, Loader2, Plus, AlertCircle, Sparkles, Check, Database, ChevronDown, ChevronUp, FileText, Wand2 } from 'lucide-react';
 import { Modal } from './ui/Modal';
 import { Button, Badge, Card } from './ui';
-import { lookupPluginPermissions, isAIConfigured, type PluginLookupResult } from '../lib/ai';
+import { lookupPluginPermissions, isAIConfigured, parseDocumentation, type PluginLookupResult } from '../lib/ai';
 import { saveCustomPlugin, type CustomPluginData } from '../data/customPlugins';
-import type { PermissionNode, Plugin } from '../data/types';
+import type { PermissionNode, Plugin, ServerType } from '../data/types';
 
 interface PluginSearchModalProps {
   isOpen: boolean;
@@ -13,13 +13,18 @@ interface PluginSearchModalProps {
   existingPlugins: string[];
 }
 
+type SearchMode = 'search' | 'paste';
+
 export function PluginSearchModal({
   isOpen,
   onClose,
   onAddPlugin,
   existingPlugins,
 }: PluginSearchModalProps) {
+  const [mode, setMode] = useState<SearchMode>('search');
   const [query, setQuery] = useState('');
+  const [docText, setDocText] = useState('');
+  const [pluginNameForDoc, setPluginNameForDoc] = useState('');
   const [isSearching, setIsSearching] = useState(false);
   const [result, setResult] = useState<PluginLookupResult | null>(null);
   const [added, setAdded] = useState(false);
@@ -48,6 +53,59 @@ export function PluginSearchModal({
         permissions: [],
         source: 'local',
         error: 'Search failed. Please try again.',
+      });
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleParseDoc = () => {
+    if (!docText.trim() || !pluginNameForDoc.trim()) return;
+
+    setIsSearching(true);
+    setResult(null);
+    setExpandedPermissions(new Set());
+    setSelectedPermissions(new Set());
+
+    try {
+      const parsed = parseDocumentation(docText, pluginNameForDoc);
+      const slug = pluginNameForDoc.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+      if (parsed.length > 0) {
+        const permissions: PermissionNode[] = parsed.map((p, i) => ({
+          id: `${slug}-doc-${i}`,
+          pluginId: slug,
+          node: p.node,
+          description: p.description + (p.command ? ` (${p.command})` : ''),
+          recommendedRank: p.recommendedRank,
+          riskLevel: p.riskLevel,
+          serverTypes: ['survival', 'factions', 'skyblock', 'prison', 'minigames', 'creative', 'custom'] as ServerType[],
+          isDefault: p.riskLevel === 'safe' && i < 5,
+        }));
+
+        setResult({
+          found: true,
+          pluginName: pluginNameForDoc,
+          permissions,
+          source: 'local',
+        });
+        setSelectedPermissions(new Set(permissions.map((_, i) => i)));
+      } else {
+        setResult({
+          found: false,
+          pluginName: pluginNameForDoc,
+          permissions: [],
+          source: 'local',
+          error: 'Could not parse any permissions from the documentation. Try a different format.',
+        });
+      }
+    } catch (error) {
+      setResult({
+        found: false,
+        pluginName: pluginNameForDoc,
+        permissions: [],
+        source: 'local',
+        error: 'Failed to parse documentation.',
       });
     } finally {
       setIsSearching(false);
@@ -85,6 +143,8 @@ export function PluginSearchModal({
     setTimeout(() => {
       setAdded(false);
       setQuery('');
+      setDocText('');
+      setPluginNameForDoc('');
       setResult(null);
       setSelectedPermissions(new Set());
       onClose();
@@ -137,51 +197,141 @@ export function PluginSearchModal({
     }
   };
 
+  const resetState = () => {
+    setResult(null);
+    setSelectedPermissions(new Set());
+    setExpandedPermissions(new Set());
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Find Plugin Permissions" size="2xl">
       <div className="space-y-5">
+        {/* Mode Toggle */}
+        <div className="flex gap-2 p-1 bg-surface-800 rounded-lg">
+          <button
+            onClick={() => { setMode('search'); resetState(); }}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              mode === 'search'
+                ? 'bg-primary-500 text-white'
+                : 'text-surface-400 hover:text-white hover:bg-surface-700'
+            }`}
+          >
+            <Search className="w-4 h-4" />
+            Search by Name
+          </button>
+          <button
+            onClick={() => { setMode('paste'); resetState(); }}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              mode === 'paste'
+                ? 'bg-primary-500 text-white'
+                : 'text-surface-400 hover:text-white hover:bg-surface-700'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            Paste Documentation
+          </button>
+        </div>
+
         {/* Info */}
         <div className="flex items-start gap-3 p-3 bg-surface-800 rounded-lg">
           <Sparkles className="w-5 h-5 text-primary-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm text-white">
-              Search for plugins not in our database
-            </p>
-            <p className="text-xs text-surface-400 mt-1">
-              {isAIConfigured()
-                ? 'AI will generate common permission nodes for the plugin. Added plugins are saved to your local database.'
-                : 'Basic permission patterns will be generated. Enable AI for better results.'}
-            </p>
+            {mode === 'search' ? (
+              <>
+                <p className="text-sm text-white">
+                  Search for plugins not in our database
+                </p>
+                <p className="text-xs text-surface-400 mt-1">
+                  {isAIConfigured()
+                    ? 'AI will generate permission nodes based on its knowledge. Added plugins are saved locally.'
+                    : 'Basic permission patterns will be generated. Enable AI for better results.'}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-sm text-white">
+                  Paste plugin documentation to extract permissions
+                </p>
+                <p className="text-xs text-surface-400 mt-1">
+                  Paste command lists or permission docs from Spigot/Bukkit pages. Supports formats like:
+                  <br />
+                  <code className="text-primary-400">/plugin command (description)</code> or <code className="text-primary-400">permission.node - description</code>
+                </p>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Search Input */}
-        <div>
-          <label className="block text-sm font-medium text-surface-300 mb-1.5">
-            Plugin Name
-          </label>
-          <div className="flex gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
+        {/* Search Mode */}
+        {mode === 'search' && (
+          <div>
+            <label className="block text-sm font-medium text-surface-300 mb-1.5">
+              Plugin Name
+            </label>
+            <div className="flex gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-surface-500" />
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  className="input w-full pl-10"
+                  placeholder="e.g. ClearLag, McMMO, Jobs"
+                  autoFocus
+                />
+              </div>
+              <Button onClick={handleSearch} disabled={!query.trim() || isSearching}>
+                {isSearching ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  'Search'
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Paste Mode */}
+        {mode === 'paste' && (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium text-surface-300 mb-1.5">
+                Plugin Name
+              </label>
               <input
                 type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                className="input w-full pl-10"
-                placeholder="e.g. CustomPlugin, MyPlugin"
-                autoFocus
+                value={pluginNameForDoc}
+                onChange={(e) => setPluginNameForDoc(e.target.value)}
+                className="input w-full"
+                placeholder="e.g. ClearLag"
               />
             </div>
-            <Button onClick={handleSearch} disabled={!query.trim() || isSearching}>
+            <div>
+              <label className="block text-sm font-medium text-surface-300 mb-1.5">
+                Documentation Text
+              </label>
+              <textarea
+                value={docText}
+                onChange={(e) => setDocText(e.target.value)}
+                className="input w-full h-32 resize-none font-mono text-xs"
+                placeholder={`Paste documentation here, e.g.:\n\nCommands\n(Permissions are just pluginname.<command-name>)\n/plugin clear (Clears entities)\n/plugin reload (Reloads config)`}
+              />
+            </div>
+            <Button
+              onClick={handleParseDoc}
+              disabled={!docText.trim() || !pluginNameForDoc.trim() || isSearching}
+              className="w-full"
+            >
               {isSearching ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin mr-2" />
               ) : (
-                'Search'
+                <Wand2 className="w-4 h-4 mr-2" />
               )}
+              Parse Documentation
             </Button>
           </div>
-        </div>
+        )}
 
         {/* Results */}
         {result && (
@@ -192,7 +342,7 @@ export function PluginSearchModal({
                   <div className="flex items-center gap-2">
                     <h3 className="text-lg font-medium text-white">{result.pluginName}</h3>
                     <Badge variant={result.source === 'ai' ? 'info' : 'default'} size="sm">
-                      {result.source === 'ai' ? 'AI Generated' : 'Pattern Based'}
+                      {result.source === 'ai' ? 'AI Generated' : mode === 'paste' ? 'From Docs' : 'Database'}
                     </Badge>
                   </div>
                   <div className="flex items-center gap-2">
@@ -209,7 +359,7 @@ export function PluginSearchModal({
                 </div>
 
                 {/* Permission List - Larger viewport */}
-                <div className="max-h-[400px] overflow-y-auto space-y-2 pr-2">
+                <div className="max-h-[350px] overflow-y-auto space-y-2 pr-2">
                   {result.permissions.map((perm, i) => {
                     const isExpanded = expandedPermissions.has(i);
                     const isSelected = selectedPermissions.has(i);
@@ -336,7 +486,7 @@ export function PluginSearchModal({
                 <div>
                   <p className="text-sm text-white">No permissions found</p>
                   <p className="text-xs text-surface-400 mt-0.5">
-                    {result.error || 'Try a different plugin name or enable AI for better results.'}
+                    {result.error || 'Try a different plugin name or paste documentation.'}
                   </p>
                 </div>
               </div>

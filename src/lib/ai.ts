@@ -542,7 +542,151 @@ const knownPluginPermissions: Record<string, PluginPermissionData> = {
       { node: 'silkspawners.freealiases', description: 'Free spawner changes', recommendedRank: 'elite', riskLevel: 'moderate' },
     ],
   },
+  clearlag: {
+    prefix: 'lagg.',
+    permissions: [
+      { node: 'lagg.clear', description: 'Clears configured entities', recommendedRank: 'admin', riskLevel: 'dangerous', command: '/lagg clear' },
+      { node: 'lagg.check', description: 'Displays world information', recommendedRank: 'mod', riskLevel: 'safe', command: '/lagg check' },
+      { node: 'lagg.reload', description: 'Reloads the configuration', recommendedRank: 'admin', riskLevel: 'dangerous', command: '/lagg reload' },
+      { node: 'lagg.killmobs', description: 'Kills configured mobs', recommendedRank: 'admin', riskLevel: 'dangerous', command: '/lagg killmobs' },
+      { node: 'lagg.area', description: 'Removes entities in given radius', recommendedRank: 'admin', riskLevel: 'dangerous', command: '/lagg area' },
+      { node: 'lagg.tpchunk', description: 'Teleports to given chunk', recommendedRank: 'admin', riskLevel: 'moderate', command: '/lagg tpchunk' },
+      { node: 'lagg.admin', description: 'Manage ClearLag modules', recommendedRank: 'admin', riskLevel: 'dangerous', command: '/lagg admin' },
+      { node: 'lagg.gc', description: 'Force garbage collection (not recommended)', recommendedRank: 'owner', riskLevel: 'critical', command: '/lagg gc' },
+      { node: 'lagg.tps', description: 'View estimated TPS', recommendedRank: 'mod', riskLevel: 'safe', command: '/lagg tps' },
+      { node: 'lagg.halt', description: 'Disable basic server functions temporarily', recommendedRank: 'admin', riskLevel: 'critical', command: '/lagg halt' },
+      { node: 'lagg.samplememory', description: 'Sample memory usage per tick', recommendedRank: 'admin', riskLevel: 'moderate', command: '/lagg sampleMemory' },
+      { node: 'lagg.sampleticks', description: 'Sample tick completion times', recommendedRank: 'admin', riskLevel: 'moderate', command: '/lagg sampleTicks' },
+      { node: 'lagg.unloadchunks', description: 'Attempts to unload chunks', recommendedRank: 'admin', riskLevel: 'dangerous', command: '/lagg unloadchunks' },
+      { node: 'lagg.profile', description: 'Profile activities like redstone', recommendedRank: 'admin', riskLevel: 'moderate', command: '/lagg profile' },
+      { node: 'lagg.memory', description: 'View memory heap in realtime', recommendedRank: 'admin', riskLevel: 'safe', command: '/lagg memory' },
+      { node: 'lagg.performance', description: 'View main-thread usage in real-time', recommendedRank: 'admin', riskLevel: 'safe', command: '/lagg performance' },
+    ],
+  },
 };
+
+// ============================================
+// DOCUMENTATION PARSER
+// ============================================
+
+interface ParsedPermission {
+  node: string;
+  description: string;
+  command?: string;
+  recommendedRank: RankLevel;
+  riskLevel: 'safe' | 'moderate' | 'dangerous' | 'critical';
+}
+
+/**
+ * Parse plugin documentation text to extract permissions
+ * Handles various common documentation formats:
+ * - "Permissions are just pluginname.<command-name>"
+ * - "/command - description (permission: node.here)"
+ * - "permission.node - description"
+ */
+export function parseDocumentation(text: string, pluginName?: string): ParsedPermission[] {
+  const permissions: ParsedPermission[] = [];
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+
+  // Try to detect the permission pattern from the text
+  let permissionPrefix = '';
+  const prefixMatch = text.match(/permissions?\s+(?:are|is)\s+(?:just\s+)?([a-z]+)\.<[^>]*>/i);
+  if (prefixMatch) {
+    permissionPrefix = prefixMatch[1].toLowerCase() + '.';
+  } else if (pluginName) {
+    permissionPrefix = pluginName.toLowerCase().replace(/[^a-z0-9]/g, '') + '.';
+  }
+
+  for (const line of lines) {
+    // Pattern 1: /command (description) - extract command name
+    const commandMatch = line.match(/^\/([a-z]+)\s+([a-z_]+)(?:\s+[<\[].*)?(?:\s*\(([^)]+)\))?/i);
+    if (commandMatch && permissionPrefix) {
+      const baseCommand = commandMatch[1].toLowerCase();
+      const subCommand = commandMatch[2].toLowerCase();
+      const description = commandMatch[3] || `${subCommand} command`;
+
+      const node = `${permissionPrefix.replace(/\.$/, '')}.${subCommand}`;
+      const riskLevel = determineRiskLevel(subCommand, description);
+
+      permissions.push({
+        node,
+        description,
+        command: `/${baseCommand} ${subCommand}`,
+        recommendedRank: determineRankFromRisk(riskLevel),
+        riskLevel,
+      });
+      continue;
+    }
+
+    // Pattern 2: permission.node - description
+    const permMatch = line.match(/^([a-z][a-z0-9._]+)\s*[-:]\s*(.+)/i);
+    if (permMatch && permMatch[1].includes('.')) {
+      const node = permMatch[1].toLowerCase();
+      const description = permMatch[2].trim();
+      const riskLevel = determineRiskLevel(node, description);
+
+      permissions.push({
+        node,
+        description,
+        recommendedRank: determineRankFromRisk(riskLevel),
+        riskLevel,
+      });
+      continue;
+    }
+
+    // Pattern 3: /command - description (permission: node.here)
+    const permInParenMatch = line.match(/\/([a-z][a-z0-9\s]*)\s*[-:]\s*(.+?)\s*\(permission:?\s*([a-z][a-z0-9._]+)\)/i);
+    if (permInParenMatch) {
+      const command = '/' + permInParenMatch[1].trim();
+      const description = permInParenMatch[2].trim();
+      const node = permInParenMatch[3].toLowerCase();
+      const riskLevel = determineRiskLevel(node, description);
+
+      permissions.push({
+        node,
+        description,
+        command,
+        recommendedRank: determineRankFromRisk(riskLevel),
+        riskLevel,
+      });
+    }
+  }
+
+  return permissions;
+}
+
+// Determine risk level based on keywords
+function determineRiskLevel(node: string, description: string): 'safe' | 'moderate' | 'dangerous' | 'critical' {
+  const text = (node + ' ' + description).toLowerCase();
+
+  // Critical: server-level dangerous operations
+  if (text.match(/\b(gc|halt|shutdown|stop|delete|purge|reset|wipe|all|force|override|bypass|op|console|execute)\b/)) {
+    return 'critical';
+  }
+
+  // Dangerous: moderation and entity manipulation
+  if (text.match(/\b(ban|kick|mute|clear|kill|remove|reload|admin|give|spawn|teleport|tp\b|rollback|restore)\b/)) {
+    return 'dangerous';
+  }
+
+  // Moderate: gameplay-affecting features
+  if (text.match(/\b(fly|heal|feed|god|vanish|gamemode|edit|modify|set|change|area|chunk|unload|profile|sample)\b/)) {
+    return 'moderate';
+  }
+
+  // Safe: information and basic features
+  return 'safe';
+}
+
+// Determine rank from risk level
+function determineRankFromRisk(riskLevel: 'safe' | 'moderate' | 'dangerous' | 'critical'): RankLevel {
+  switch (riskLevel) {
+    case 'critical': return 'owner';
+    case 'dangerous': return 'admin';
+    case 'moderate': return 'mod';
+    case 'safe': return 'player';
+  }
+}
 
 // Generate common permissions for unknown plugins
 function generateCommonPermissions(pluginName: string): PermissionNode[] {
