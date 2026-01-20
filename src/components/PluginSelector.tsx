@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Search, Check } from 'lucide-react';
-import { Card } from './ui';
+import { Search, Check, Plus } from 'lucide-react';
+import { Card, Button } from './ui';
+import { PluginSearchModal } from './PluginSearchModal';
 import { plugins, pluginsByCategory } from '../data';
+import type { Plugin, PermissionNode } from '../data/types';
 
 interface PluginSelectorProps {
   value: string[];
@@ -19,8 +21,19 @@ const categoryLabels: Record<string, string> = {
 
 export function PluginSelector({ value, onChange }: PluginSelectorProps) {
   const [search, setSearch] = useState('');
+  const [showSearchModal, setShowSearchModal] = useState(false);
+  const [customPlugins, setCustomPlugins] = useState<Plugin[]>([]);
 
-  const filteredPlugins = plugins.filter(
+  const allPlugins = [...plugins, ...customPlugins];
+
+  const handleAddCustomPlugin = (plugin: Plugin, _permissions: PermissionNode[]) => {
+    setCustomPlugins((prev) => [...prev, plugin]);
+    onChange([...value, plugin.id]);
+    // Note: permissions would need to be added to the global state/context
+    // For now, they're generated but not persisted
+  };
+
+  const filteredPlugins = allPlugins.filter(
     (plugin) =>
       plugin.name.toLowerCase().includes(search.toLowerCase()) ||
       plugin.description.toLowerCase().includes(search.toLowerCase())
@@ -62,14 +75,20 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
         <span className="text-surface-400">
           {value.length} plugin{value.length !== 1 ? 's' : ''} selected
         </span>
-        {value.length > 0 && (
-          <button
-            onClick={() => onChange([])}
-            className="text-sm text-primary-400 hover:text-primary-300"
-          >
-            Clear all
-          </button>
-        )}
+        <div className="flex items-center gap-4">
+          {value.length > 0 && (
+            <button
+              onClick={() => onChange([])}
+              className="text-sm text-primary-400 hover:text-primary-300"
+            >
+              Clear all
+            </button>
+          )}
+          <Button size="sm" variant="secondary" onClick={() => setShowSearchModal(true)}>
+            <Plus className="w-4 h-4 mr-1" />
+            Find More Plugins
+          </Button>
+        </div>
       </div>
 
       {/* Plugin grid */}
@@ -105,12 +124,39 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
           ))}
         </div>
       )}
+
+      {/* Custom plugins section */}
+      {customPlugins.length > 0 && !search && (
+        <div>
+          <h3 className="text-sm font-medium text-surface-400 uppercase tracking-wider mb-3">
+            Custom Plugins
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {customPlugins.map((plugin) => (
+              <PluginCard
+                key={plugin.id}
+                plugin={plugin}
+                selected={value.includes(plugin.id)}
+                onToggle={() => togglePlugin(plugin.id)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Plugin Search Modal */}
+      <PluginSearchModal
+        isOpen={showSearchModal}
+        onClose={() => setShowSearchModal(false)}
+        onAddPlugin={handleAddCustomPlugin}
+        existingPlugins={value}
+      />
     </div>
   );
 }
 
 interface PluginCardProps {
-  plugin: (typeof plugins)[0];
+  plugin: Plugin;
   selected: boolean;
   onToggle: () => void;
 }
