@@ -373,23 +373,174 @@ export interface PluginLookupResult {
   error?: string;
 }
 
-// Known permission patterns for common plugin types
-const permissionPatterns: Record<string, { prefix: string; common: string[] }> = {
-  essentials: {
+// Known permission patterns for common plugin types with actual real permissions
+interface PluginPermissionData {
+  prefix: string;
+  permissions: Array<{
+    node: string;
+    description: string;
+    recommendedRank: RankLevel;
+    riskLevel: 'safe' | 'moderate' | 'dangerous' | 'critical';
+    command?: string;
+  }>;
+}
+
+const knownPluginPermissions: Record<string, PluginPermissionData> = {
+  essentialsx: {
     prefix: 'essentials.',
-    common: ['home', 'spawn', 'tp', 'tpa', 'warp', 'kit', 'heal', 'feed', 'fly', 'god'],
-  },
-  worldedit: {
-    prefix: 'worldedit.',
-    common: ['clipboard', 'region', 'selection', 'history', 'brush', 'tool'],
+    permissions: [
+      { node: 'essentials.home', description: 'Teleport to your home', recommendedRank: 'player', riskLevel: 'safe', command: '/home' },
+      { node: 'essentials.sethome', description: 'Set your home location', recommendedRank: 'player', riskLevel: 'safe', command: '/sethome' },
+      { node: 'essentials.sethome.multiple', description: 'Set multiple homes', recommendedRank: 'vip', riskLevel: 'safe' },
+      { node: 'essentials.spawn', description: 'Teleport to spawn', recommendedRank: 'player', riskLevel: 'safe', command: '/spawn' },
+      { node: 'essentials.tpa', description: 'Request to teleport to a player', recommendedRank: 'player', riskLevel: 'safe', command: '/tpa' },
+      { node: 'essentials.tpaccept', description: 'Accept teleport requests', recommendedRank: 'player', riskLevel: 'safe', command: '/tpaccept' },
+      { node: 'essentials.back', description: 'Return to previous location', recommendedRank: 'vip', riskLevel: 'safe', command: '/back' },
+      { node: 'essentials.back.ondeath', description: 'Use /back after death', recommendedRank: 'vip_plus', riskLevel: 'moderate' },
+      { node: 'essentials.warp', description: 'Teleport to warps', recommendedRank: 'player', riskLevel: 'safe', command: '/warp' },
+      { node: 'essentials.kit', description: 'Use kits', recommendedRank: 'player', riskLevel: 'safe', command: '/kit' },
+      { node: 'essentials.nick', description: 'Change your nickname', recommendedRank: 'vip', riskLevel: 'safe', command: '/nick' },
+      { node: 'essentials.nick.color', description: 'Use colors in nickname', recommendedRank: 'vip_plus', riskLevel: 'safe' },
+      { node: 'essentials.fly', description: 'Enable flight mode', recommendedRank: 'mvp_plus', riskLevel: 'moderate', command: '/fly' },
+      { node: 'essentials.heal', description: 'Heal yourself', recommendedRank: 'mvp', riskLevel: 'moderate', command: '/heal' },
+      { node: 'essentials.feed', description: 'Feed yourself', recommendedRank: 'vip_plus', riskLevel: 'safe', command: '/feed' },
+      { node: 'essentials.god', description: 'Enable god mode', recommendedRank: 'admin', riskLevel: 'dangerous', command: '/god' },
+      { node: 'essentials.tp', description: 'Teleport to players', recommendedRank: 'mod', riskLevel: 'dangerous', command: '/tp' },
+      { node: 'essentials.tpo', description: 'Teleport override (ignores tptoggle)', recommendedRank: 'mod', riskLevel: 'dangerous' },
+      { node: 'essentials.gamemode', description: 'Change gamemode', recommendedRank: 'admin', riskLevel: 'dangerous', command: '/gamemode' },
+      { node: 'essentials.give', description: 'Give items to players', recommendedRank: 'admin', riskLevel: 'critical', command: '/give' },
+      { node: 'essentials.vanish', description: 'Become invisible', recommendedRank: 'mod', riskLevel: 'dangerous', command: '/vanish' },
+      { node: 'essentials.ban', description: 'Ban players', recommendedRank: 'mod', riskLevel: 'dangerous', command: '/ban' },
+      { node: 'essentials.kick', description: 'Kick players', recommendedRank: 'helper', riskLevel: 'moderate', command: '/kick' },
+      { node: 'essentials.mute', description: 'Mute players', recommendedRank: 'helper', riskLevel: 'moderate', command: '/mute' },
+    ],
   },
   worldguard: {
     prefix: 'worldguard.',
-    common: ['region', 'build', 'bypass', 'region.define', 'region.claim'],
+    permissions: [
+      { node: 'worldguard.region.claim', description: 'Claim regions', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'worldguard.region.select', description: 'Select regions', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'worldguard.region.info', description: 'View region info', recommendedRank: 'player', riskLevel: 'safe', command: '/rg info' },
+      { node: 'worldguard.region.list', description: 'List regions', recommendedRank: 'player', riskLevel: 'safe', command: '/rg list' },
+      { node: 'worldguard.region.addmember.own', description: 'Add members to your regions', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'worldguard.region.define', description: 'Define new regions', recommendedRank: 'admin', riskLevel: 'dangerous', command: '/rg define' },
+      { node: 'worldguard.region.remove', description: 'Remove regions', recommendedRank: 'admin', riskLevel: 'dangerous', command: '/rg remove' },
+      { node: 'worldguard.region.flag', description: 'Set region flags', recommendedRank: 'admin', riskLevel: 'dangerous', command: '/rg flag' },
+      { node: 'worldguard.region.bypass', description: 'Bypass region protections', recommendedRank: 'admin', riskLevel: 'critical' },
+    ],
   },
-  luckperms: {
-    prefix: 'luckperms.',
-    common: ['user', 'group', 'track', 'log', 'sync', 'import', 'export'],
+  griefprevention: {
+    prefix: 'griefprevention.',
+    permissions: [
+      { node: 'griefprevention.createclaims', description: 'Create land claims', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'griefprevention.claimslist', description: 'List your claims', recommendedRank: 'player', riskLevel: 'safe', command: '/claimslist' },
+      { node: 'griefprevention.abandonallclaims', description: 'Abandon all claims', recommendedRank: 'player', riskLevel: 'safe', command: '/abandonallclaims' },
+      { node: 'griefprevention.trust', description: 'Trust players in claims', recommendedRank: 'player', riskLevel: 'safe', command: '/trust' },
+      { node: 'griefprevention.untrust', description: 'Untrust players in claims', recommendedRank: 'player', riskLevel: 'safe', command: '/untrust' },
+      { node: 'griefprevention.buyclaimblocks', description: 'Buy claim blocks', recommendedRank: 'player', riskLevel: 'safe', command: '/buyclaimblocks' },
+      { node: 'griefprevention.adminclaims', description: 'Create admin claims', recommendedRank: 'admin', riskLevel: 'dangerous', command: '/adminclaims' },
+      { node: 'griefprevention.deleteclaims', description: 'Delete other players claims', recommendedRank: 'admin', riskLevel: 'dangerous' },
+      { node: 'griefprevention.ignoreclaims', description: 'Ignore claim protections', recommendedRank: 'admin', riskLevel: 'critical' },
+      { node: 'griefprevention.adjustclaimblocks', description: 'Adjust claim block amounts', recommendedRank: 'admin', riskLevel: 'dangerous' },
+    ],
+  },
+  mcmmo: {
+    prefix: 'mcmmo.',
+    permissions: [
+      { node: 'mcmmo.skills.mining', description: 'Use mining skill', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.skills.woodcutting', description: 'Use woodcutting skill', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.skills.excavation', description: 'Use excavation skill', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.skills.fishing', description: 'Use fishing skill', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.skills.herbalism', description: 'Use herbalism skill', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.skills.swords', description: 'Use swords skill', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.skills.axes', description: 'Use axes skill', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.skills.archery', description: 'Use archery skill', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.skills.unarmed', description: 'Use unarmed skill', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.skills.taming', description: 'Use taming skill', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.skills.repair', description: 'Use repair skill', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.skills.acrobatics', description: 'Use acrobatics skill', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.skills.alchemy', description: 'Use alchemy skill', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.ability.mining.superbreaker', description: 'Use Super Breaker ability', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.ability.swords.serratedstrikes', description: 'Use Serrated Strikes ability', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'mcmmo.commands.mcstats', description: 'View mcMMO stats', recommendedRank: 'player', riskLevel: 'safe', command: '/mcstats' },
+      { node: 'mcmmo.commands.mctop', description: 'View skill leaderboards', recommendedRank: 'player', riskLevel: 'safe', command: '/mctop' },
+      { node: 'mcmmo.commands.mmoedit', description: 'Edit player skills', recommendedRank: 'admin', riskLevel: 'critical', command: '/mmoedit' },
+      { node: 'mcmmo.bypass.levelcap', description: 'Bypass skill level caps', recommendedRank: 'elite', riskLevel: 'moderate' },
+    ],
+  },
+  jobs: {
+    prefix: 'jobs.',
+    permissions: [
+      { node: 'jobs.command.info', description: 'View job information', recommendedRank: 'player', riskLevel: 'safe', command: '/jobs info' },
+      { node: 'jobs.command.join', description: 'Join jobs', recommendedRank: 'player', riskLevel: 'safe', command: '/jobs join' },
+      { node: 'jobs.command.leave', description: 'Leave jobs', recommendedRank: 'player', riskLevel: 'safe', command: '/jobs leave' },
+      { node: 'jobs.command.stats', description: 'View job stats', recommendedRank: 'player', riskLevel: 'safe', command: '/jobs stats' },
+      { node: 'jobs.command.browse', description: 'Browse available jobs', recommendedRank: 'player', riskLevel: 'safe', command: '/jobs browse' },
+      { node: 'jobs.command.top', description: 'View job leaderboards', recommendedRank: 'player', riskLevel: 'safe', command: '/jobs top' },
+      { node: 'jobs.command.bonus', description: 'View job bonuses', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'jobs.max.2', description: 'Join up to 2 jobs', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'jobs.max.3', description: 'Join up to 3 jobs', recommendedRank: 'vip', riskLevel: 'safe' },
+      { node: 'jobs.max.5', description: 'Join up to 5 jobs', recommendedRank: 'vip_plus', riskLevel: 'safe' },
+      { node: 'jobs.boost.1.5', description: '1.5x job income boost', recommendedRank: 'vip', riskLevel: 'moderate' },
+      { node: 'jobs.boost.2', description: '2x job income boost', recommendedRank: 'mvp', riskLevel: 'moderate' },
+      { node: 'jobs.command.admin', description: 'Jobs admin commands', recommendedRank: 'admin', riskLevel: 'dangerous' },
+      { node: 'jobs.command.give', description: 'Give job experience', recommendedRank: 'admin', riskLevel: 'critical' },
+    ],
+  },
+  coreprotect: {
+    prefix: 'coreprotect.',
+    permissions: [
+      { node: 'coreprotect.inspect', description: 'Inspect block changes', recommendedRank: 'helper', riskLevel: 'safe', command: '/co i' },
+      { node: 'coreprotect.lookup', description: 'Lookup block history', recommendedRank: 'mod', riskLevel: 'safe', command: '/co lookup' },
+      { node: 'coreprotect.rollback', description: 'Rollback block changes', recommendedRank: 'mod', riskLevel: 'dangerous', command: '/co rollback' },
+      { node: 'coreprotect.restore', description: 'Restore rolled back changes', recommendedRank: 'mod', riskLevel: 'dangerous', command: '/co restore' },
+      { node: 'coreprotect.purge', description: 'Purge old data', recommendedRank: 'admin', riskLevel: 'critical', command: '/co purge' },
+      { node: 'coreprotect.reload', description: 'Reload configuration', recommendedRank: 'admin', riskLevel: 'dangerous', command: '/co reload' },
+    ],
+  },
+  litebans: {
+    prefix: 'litebans.',
+    permissions: [
+      { node: 'litebans.ban', description: 'Ban players', recommendedRank: 'mod', riskLevel: 'dangerous', command: '/ban' },
+      { node: 'litebans.tempban', description: 'Temporarily ban players', recommendedRank: 'mod', riskLevel: 'dangerous', command: '/tempban' },
+      { node: 'litebans.mute', description: 'Mute players', recommendedRank: 'helper', riskLevel: 'moderate', command: '/mute' },
+      { node: 'litebans.tempmute', description: 'Temporarily mute players', recommendedRank: 'helper', riskLevel: 'moderate', command: '/tempmute' },
+      { node: 'litebans.kick', description: 'Kick players', recommendedRank: 'helper', riskLevel: 'moderate', command: '/kick' },
+      { node: 'litebans.warn', description: 'Warn players', recommendedRank: 'helper', riskLevel: 'safe', command: '/warn' },
+      { node: 'litebans.unban', description: 'Unban players', recommendedRank: 'mod', riskLevel: 'moderate', command: '/unban' },
+      { node: 'litebans.unmute', description: 'Unmute players', recommendedRank: 'helper', riskLevel: 'moderate', command: '/unmute' },
+      { node: 'litebans.history', description: 'View player punishment history', recommendedRank: 'helper', riskLevel: 'safe', command: '/history' },
+      { node: 'litebans.banlist', description: 'View ban list', recommendedRank: 'mod', riskLevel: 'safe', command: '/banlist' },
+      { node: 'litebans.ipban', description: 'IP ban players', recommendedRank: 'admin', riskLevel: 'critical', command: '/ipban' },
+    ],
+  },
+  vault: {
+    prefix: 'vault.',
+    permissions: [
+      { node: 'vault.admin', description: 'Vault admin access', recommendedRank: 'admin', riskLevel: 'dangerous' },
+    ],
+  },
+  shopgui: {
+    prefix: 'shopguiplus.',
+    permissions: [
+      { node: 'shopguiplus.shop', description: 'Open the shop GUI', recommendedRank: 'player', riskLevel: 'safe', command: '/shop' },
+      { node: 'shopguiplus.sell', description: 'Sell items', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'shopguiplus.buy', description: 'Buy items', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'shopguiplus.sellall', description: 'Sell all items at once', recommendedRank: 'vip', riskLevel: 'safe', command: '/sellall' },
+      { node: 'shopguiplus.sellhand', description: 'Sell item in hand', recommendedRank: 'player', riskLevel: 'safe', command: '/sellhand' },
+      { node: 'shopguiplus.admin', description: 'Shop admin commands', recommendedRank: 'admin', riskLevel: 'dangerous' },
+    ],
+  },
+  silkspawners: {
+    prefix: 'silkspawners.',
+    permissions: [
+      { node: 'silkspawners.silkdrop', description: 'Get spawner drops with silk touch', recommendedRank: 'vip', riskLevel: 'moderate' },
+      { node: 'silkspawners.place', description: 'Place spawners', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'silkspawners.changetype', description: 'Change spawner mob types', recommendedRank: 'mvp', riskLevel: 'moderate' },
+      { node: 'silkspawners.spawnegg', description: 'Use spawn eggs to change spawners', recommendedRank: 'vip_plus', riskLevel: 'moderate' },
+      { node: 'silkspawners.viewtype', description: 'View spawner types', recommendedRank: 'player', riskLevel: 'safe' },
+      { node: 'silkspawners.freealiases', description: 'Free spawner changes', recommendedRank: 'elite', riskLevel: 'moderate' },
+    ],
   },
 };
 
@@ -411,28 +562,39 @@ function generateCommonPermissions(pluginName: string): PermissionNode[] {
 }
 
 export async function lookupPluginPermissions(pluginName: string): Promise<PluginLookupResult> {
-  const normalized = pluginName.toLowerCase().trim();
+  const normalized = pluginName.toLowerCase().trim().replace(/[^a-z0-9]/g, '');
 
-  // Check if we have known patterns
-  if (permissionPatterns[normalized]) {
-    const pattern = permissionPatterns[normalized];
-    const permissions: PermissionNode[] = pattern.common.map((action, i) => ({
-      id: `${normalized}-${action}`,
-      pluginId: normalized,
-      node: `${pattern.prefix}${action}`,
-      description: `${action.charAt(0).toUpperCase() + action.slice(1)} permission`,
-      recommendedRank: 'player',
-      riskLevel: 'safe',
-      serverTypes: ['survival', 'factions', 'skyblock', 'prison', 'minigames', 'creative', 'custom'] as ServerType[],
-      isDefault: i < 3,
-    }));
+  // Check multiple variations of the plugin name
+  const variations = [
+    normalized,
+    normalized.replace('reborn', ''),
+    normalized.replace('plus', ''),
+    normalized + 'x',
+    normalized.replace(/x$/, ''),
+  ];
 
-    return {
-      found: true,
-      pluginName,
-      permissions,
-      source: 'local',
-    };
+  // Check if we have known permissions for this plugin
+  for (const variant of variations) {
+    if (knownPluginPermissions[variant]) {
+      const pluginData = knownPluginPermissions[variant];
+      const permissions: PermissionNode[] = pluginData.permissions.map((perm, i) => ({
+        id: `${normalized}-${i}`,
+        pluginId: normalized,
+        node: perm.node,
+        description: perm.description + (perm.command ? ` (${perm.command})` : ''),
+        recommendedRank: perm.recommendedRank,
+        riskLevel: perm.riskLevel,
+        serverTypes: ['survival', 'factions', 'skyblock', 'prison', 'minigames', 'creative', 'custom'] as ServerType[],
+        isDefault: perm.riskLevel === 'safe' && i < 5,
+      }));
+
+      return {
+        found: true,
+        pluginName,
+        permissions,
+        source: 'local',
+      };
+    }
   }
 
   // Try web search if enabled
@@ -481,7 +643,7 @@ async function searchPluginPermissions(pluginName: string): Promise<PluginLookup
   };
 }
 
-// Generate permissions using AI
+// Generate permissions using AI with comprehensive knowledge
 async function generatePermissionsWithAI(pluginName: string): Promise<PluginLookupResult> {
   if (!config.apiKey) {
     return {
@@ -495,23 +657,58 @@ async function generatePermissionsWithAI(pluginName: string): Promise<PluginLook
 
   try {
     const response = await callAI(`
-      Generate a list of common permission nodes for the Minecraft plugin "${pluginName}".
+You are a Minecraft server permissions expert with extensive knowledge of Spigot/Bukkit plugins.
 
-      Return ONLY a JSON array with this structure (no markdown, no explanation):
-      [
-        {
-          "node": "plugin.permission",
-          "description": "What this permission does",
-          "recommendedRank": "player|vip|vip_plus|mvp|mvp_plus|elite|helper|mod|admin|owner",
-          "riskLevel": "safe|moderate|dangerous|critical"
-        }
-      ]
+For the Minecraft plugin "${pluginName}", provide the ACTUAL permission nodes as documented in the plugin's wiki, Spigot page, or Bukkit dev page.
 
-      Generate 5-10 common permissions. Be accurate based on typical plugin conventions.
+IMPORTANT RULES:
+1. Use REAL permission nodes that actually exist for this plugin (from your training data knowledge)
+2. If you know this plugin exists, provide its actual documented permissions
+3. Permission nodes typically follow patterns like: pluginname.command, pluginname.feature, pluginname.admin
+4. Include command permissions (e.g., pluginname.command.commandname)
+5. Include feature permissions (e.g., pluginname.use, pluginname.bypass)
+6. Include admin permissions (e.g., pluginname.admin, pluginname.reload)
+7. If this is a well-known plugin (EssentialsX, WorldGuard, GriefPrevention, mcMMO, Jobs, etc.), you MUST use the actual real permissions
+
+Common permission structures for reference:
+- EssentialsX: essentials.home, essentials.spawn, essentials.tp
+- WorldGuard: worldguard.region.*, worldguard.build.*
+- GriefPrevention: griefprevention.createclaims, griefprevention.adminclaims
+- LuckPerms: luckperms.user.*, luckperms.group.*
+- mcMMO: mcmmo.skills.*, mcmmo.ability.*
+- Jobs: jobs.command.*, jobs.join.*
+
+Return ONLY a valid JSON array (no markdown code blocks, no explanation):
+[
+  {
+    "node": "actual.permission.node",
+    "description": "Clear description of what this permission allows",
+    "recommendedRank": "player|vip|vip_plus|mvp|mvp_plus|elite|helper|mod|admin|owner",
+    "riskLevel": "safe|moderate|dangerous|critical",
+    "isCommand": true/false,
+    "command": "/commandname (if isCommand is true)"
+  }
+]
+
+Generate 10-20 permissions covering:
+- Basic user commands/features (safe, for players)
+- VIP/donor perks (moderate, for donors)
+- Staff commands (dangerous, for staff)
+- Admin commands (critical, for admins)
+
+If you don't recognize this plugin, still generate realistic permissions based on the plugin name following standard Minecraft plugin conventions.
     `);
 
+    // Clean up the response - remove markdown code blocks if present
+    let cleanResponse = response.trim();
+    if (cleanResponse.startsWith('```json')) {
+      cleanResponse = cleanResponse.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+    } else if (cleanResponse.startsWith('```')) {
+      cleanResponse = cleanResponse.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    }
+
     // Parse the JSON response
-    const permissions = JSON.parse(response.trim());
+    const permissions = JSON.parse(cleanResponse);
 
     if (Array.isArray(permissions) && permissions.length > 0) {
       const slug = pluginName.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -523,11 +720,11 @@ async function generatePermissionsWithAI(pluginName: string): Promise<PluginLook
           id: `${slug}-ai-${i}`,
           pluginId: slug,
           node: p.node,
-          description: p.description,
+          description: p.description + (p.command ? ` (${p.command})` : ''),
           recommendedRank: p.recommendedRank || 'player',
           riskLevel: p.riskLevel || 'safe',
           serverTypes: ['survival', 'factions', 'skyblock', 'prison', 'minigames', 'creative', 'custom'] as ServerType[],
-          isDefault: i < 3,
+          isDefault: p.riskLevel === 'safe' && i < 5,
         })),
         source: 'ai',
       };
