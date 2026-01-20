@@ -11,12 +11,25 @@ export type RiskLevel = 'safe' | 'moderate' | 'dangerous' | 'critical';
 
 export type RankLevel = 'player' | 'vip' | 'helper' | 'mod' | 'admin' | 'owner';
 
+export type PluginCategory =
+  | 'essentials'
+  | 'protection'
+  | 'economy'
+  | 'moderation'
+  | 'world'
+  | 'fun'
+  | 'chat'
+  | 'display'
+  | 'gamemodes'
+  | 'utility'
+  | 'combat';
+
 export interface Plugin {
   id: string;
   name: string;
   slug: string;
   description: string;
-  category: 'essentials' | 'protection' | 'economy' | 'moderation' | 'world' | 'fun';
+  category: PluginCategory;
   isPopular: boolean;
 }
 
