@@ -611,7 +611,73 @@ function formatMinecraftColors(text: string): string {
     result = result.replace(/&l/g, '');
   }
 
-  // Handle colors
+  // Check for gradient format: <gradient:#COLOR1:#COLOR2>text</gradient> or just <gradient:#COLOR1:#COLOR2>
+  const gradientMatch = result.match(/<gradient:(#[A-Fa-f0-9]{6}):(#[A-Fa-f0-9]{6})>/);
+  if (gradientMatch) {
+    const [fullMatch, color1, color2] = gradientMatch;
+
+    // Remove the gradient tags from the text
+    let cleanText = result.replace(fullMatch, '').replace('</gradient>', '');
+
+    // If the gradient is at the start, apply it to the following text until the next color code
+    const nextColorIndex = cleanText.search(/&[0-9a-f]/i);
+    let gradientText: string;
+    let remainingText: string;
+
+    if (nextColorIndex > 0) {
+      gradientText = cleanText.substring(0, nextColorIndex);
+      remainingText = cleanText.substring(nextColorIndex);
+    } else if (nextColorIndex === -1) {
+      gradientText = cleanText;
+      remainingText = '';
+    } else {
+      gradientText = '';
+      remainingText = cleanText;
+    }
+
+    // Create gradient span
+    const gradientStyle = `background: linear-gradient(to right, ${color1}, ${color2}); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;${isBold ? ' font-weight: bold;' : ''}`;
+
+    if (gradientText) {
+      result = `<span style="${gradientStyle}">${gradientText}</span>`;
+      // Process remaining text with standard colors
+      if (remainingText) {
+        result += formatMinecraftColors(remainingText);
+      }
+      return result;
+    }
+  }
+
+  // Check for hex color format: #RRGGBB at the start
+  const hexMatch = result.match(/^(#[A-Fa-f0-9]{6})/);
+  if (hexMatch) {
+    const hexColor = hexMatch[1];
+    const remainingText = result.substring(hexColor.length);
+
+    // Find where the hex color should stop (at next color code)
+    const nextColorIndex = remainingText.search(/&[0-9a-f]/i);
+    let coloredText: string;
+    let afterText: string;
+
+    if (nextColorIndex > 0) {
+      coloredText = remainingText.substring(0, nextColorIndex);
+      afterText = remainingText.substring(nextColorIndex);
+    } else if (nextColorIndex === -1) {
+      coloredText = remainingText;
+      afterText = '';
+    } else {
+      coloredText = '';
+      afterText = remainingText;
+    }
+
+    result = `<span style="color: ${hexColor}${isBold ? '; font-weight: bold' : ''}">${coloredText}</span>`;
+    if (afterText) {
+      result += formatMinecraftColors(afterText);
+    }
+    return result;
+  }
+
+  // Handle legacy colors
   for (const [code, color] of Object.entries(colorMap)) {
     if (result.includes(code)) {
       result = result.replace(
