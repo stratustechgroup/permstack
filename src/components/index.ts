@@ -8,3 +8,5 @@ export { OutputPanel } from './OutputPanel';
 export { AddRankModal } from './AddRankModal';
 export { AISettings, AISettingsButton, initializeAIConfig } from './AISettings';
 export { PluginSearchModal } from './PluginSearchModal';
+export { FeedbackModal, FeedbackButton } from './FeedbackModal';
+export { RequestPluginModal, RequestPluginButton } from './RequestPluginModal';
