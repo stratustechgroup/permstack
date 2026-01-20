@@ -88,7 +88,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <Header onStart={step === 'hero' ? handleStart : undefined} />
 
       <main className="flex-1">
         {step === 'hero' && <Hero onStart={handleStart} />}
