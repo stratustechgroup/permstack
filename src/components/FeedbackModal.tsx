@@ -11,7 +11,7 @@ interface FeedbackModalProps {
 type FeedbackType = 'positive' | 'negative' | 'suggestion';
 
 // Configure your feedback endpoint here
-// Options: 'mailto', 'formspree', 'discord'
+// Discord webhook URL should be set via VITE_DISCORD_FEEDBACK_WEBHOOK environment variable
 const FEEDBACK_CONFIG: {
   method: 'mailto' | 'formspree' | 'discord';
   email: string;
@@ -20,8 +20,8 @@ const FEEDBACK_CONFIG: {
 } = {
   method: 'discord', // Using Discord webhook
   email: 'feedback@permstack.com', // Fallback for mailto
-  formspreeId: '', // Your Formspree form ID (e.g., 'xrgvqpzl')
-  discordWebhook: '', // Add your Discord webhook URL here
+  formspreeId: import.meta.env.VITE_FORMSPREE_ID || '',
+  discordWebhook: import.meta.env.VITE_DISCORD_FEEDBACK_WEBHOOK || '',
 };
 
 export function FeedbackModal({ isOpen, onClose }: FeedbackModalProps) {

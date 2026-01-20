@@ -8,7 +8,8 @@ interface RequestPluginModalProps {
   onClose: () => void;
 }
 
-// Configure your submission endpoint here (same config pattern as FeedbackModal)
+// Configure your submission endpoint here
+// Discord webhook URL should be set via VITE_DISCORD_PLUGIN_REQUEST_WEBHOOK environment variable
 const REQUEST_CONFIG: {
   method: 'mailto' | 'formspree' | 'discord';
   email: string;
@@ -17,8 +18,8 @@ const REQUEST_CONFIG: {
 } = {
   method: 'discord', // Using Discord webhook
   email: 'plugins@permstack.com', // Fallback for mailto
-  formspreeId: '',
-  discordWebhook: '', // Add your Discord webhook URL here
+  formspreeId: import.meta.env.VITE_FORMSPREE_ID || '',
+  discordWebhook: import.meta.env.VITE_DISCORD_PLUGIN_REQUEST_WEBHOOK || '',
 };
 
 export function RequestPluginModal({ isOpen, onClose }: RequestPluginModalProps) {
