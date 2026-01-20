@@ -1,4 +1,44 @@
-import type { RankTemplate } from './types';
+import type { RankTemplate, RankLevelInfo } from './types';
+
+// Define what each rank level means for permission assignment
+export const rankLevels: RankLevelInfo[] = [
+  {
+    id: 'player',
+    name: 'Player',
+    description: 'Default rank for all players. Basic gameplay permissions.',
+    examples: ['Member', 'Player', 'Citizen', 'Newcomer', 'Recruit'],
+  },
+  {
+    id: 'vip',
+    name: 'VIP / Donator',
+    description: 'Premium rank with extra perks but no staff powers.',
+    examples: ['VIP', 'MVP', 'Elite', 'Premium', 'Supporter', 'Donator'],
+  },
+  {
+    id: 'helper',
+    name: 'Helper / Trial Staff',
+    description: 'Entry-level staff. Can mute, kick, and monitor players.',
+    examples: ['Helper', 'Trial Mod', 'Trainee', 'Junior Mod', 'Support'],
+  },
+  {
+    id: 'mod',
+    name: 'Moderator',
+    description: 'Full moderation powers. Can ban, rollback, and use staff tools.',
+    examples: ['Mod', 'Moderator', 'Senior Mod', 'Guardian'],
+  },
+  {
+    id: 'admin',
+    name: 'Administrator',
+    description: 'Server management. Can spawn items, edit worlds, manage permissions.',
+    examples: ['Admin', 'Administrator', 'Manager', 'Senior Admin'],
+  },
+  {
+    id: 'owner',
+    name: 'Owner',
+    description: 'Full server access. All permissions granted.',
+    examples: ['Owner', 'Co-Owner', 'Founder', 'Developer'],
+  },
+];
 
 export const rankTemplates: RankTemplate[] = [
   {
@@ -13,6 +53,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '',
         prefixColor: '&7',
         order: 0,
+        level: 'player',
       },
       {
         id: 'vip',
@@ -21,6 +62,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[VIP] ',
         prefixColor: '&a',
         order: 1,
+        level: 'vip',
       },
       {
         id: 'helper',
@@ -29,6 +71,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Helper] ',
         prefixColor: '&9',
         order: 2,
+        level: 'helper',
       },
       {
         id: 'mod',
@@ -37,6 +80,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Mod] ',
         prefixColor: '&c',
         order: 3,
+        level: 'mod',
       },
       {
         id: 'admin',
@@ -45,6 +89,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Admin] ',
         prefixColor: '&4',
         order: 4,
+        level: 'admin',
       },
       {
         id: 'owner',
@@ -53,6 +98,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Owner] ',
         prefixColor: '&4&l',
         order: 5,
+        level: 'owner',
       },
     ],
   },
@@ -68,6 +114,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '',
         prefixColor: '&7',
         order: 0,
+        level: 'player',
       },
       {
         id: 'mod',
@@ -76,6 +123,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Mod] ',
         prefixColor: '&c',
         order: 1,
+        level: 'mod',
       },
       {
         id: 'admin',
@@ -84,6 +132,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Admin] ',
         prefixColor: '&4',
         order: 2,
+        level: 'admin',
       },
     ],
   },
@@ -99,6 +148,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '',
         prefixColor: '&7',
         order: 0,
+        level: 'player',
       },
       {
         id: 'vip',
@@ -107,14 +157,16 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[VIP] ',
         prefixColor: '&a',
         order: 1,
+        level: 'vip',
       },
       {
         id: 'vip-plus',
-        name: 'vip-plus',
+        name: 'vipplus',
         displayName: 'VIP+',
         prefix: '[VIP+] ',
         prefixColor: '&2',
         order: 2,
+        level: 'vip',
       },
       {
         id: 'mvp',
@@ -123,14 +175,16 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[MVP] ',
         prefixColor: '&b',
         order: 3,
+        level: 'vip',
       },
       {
         id: 'mvp-plus',
-        name: 'mvp-plus',
+        name: 'mvpplus',
         displayName: 'MVP+',
         prefix: '[MVP+] ',
         prefixColor: '&3',
         order: 4,
+        level: 'vip',
       },
       {
         id: 'helper',
@@ -139,6 +193,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Helper] ',
         prefixColor: '&9',
         order: 5,
+        level: 'helper',
       },
       {
         id: 'mod',
@@ -147,6 +202,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Mod] ',
         prefixColor: '&c',
         order: 6,
+        level: 'mod',
       },
       {
         id: 'admin',
@@ -155,6 +211,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Admin] ',
         prefixColor: '&4',
         order: 7,
+        level: 'admin',
       },
       {
         id: 'owner',
@@ -163,6 +220,23 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Owner] ',
         prefixColor: '&4&l',
         order: 8,
+        level: 'owner',
+      },
+    ],
+  },
+  {
+    id: 'custom',
+    name: 'Custom',
+    description: 'Start from scratch with a single rank',
+    ranks: [
+      {
+        id: 'player',
+        name: 'player',
+        displayName: 'Player',
+        prefix: '',
+        prefixColor: '&7',
+        order: 0,
+        level: 'player',
       },
     ],
   },

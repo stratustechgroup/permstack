@@ -38,6 +38,14 @@ export interface Rank {
   prefix: string;
   prefixColor: string;
   order: number;
+  level: RankLevel; // Maps to permission level for generating correct permissions
+}
+
+export interface RankLevelInfo {
+  id: RankLevel;
+  name: string;
+  description: string;
+  examples: string[];
 }
 
 export interface RankTemplate {
