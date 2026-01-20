@@ -16,7 +16,13 @@ export interface AIConfig {
   enableWebSearch?: boolean;
 }
 
-let config: AIConfig = {};
+// Load API key from environment variable (set in Vercel dashboard)
+const ENV_API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string | undefined;
+
+let config: AIConfig = {
+  apiKey: ENV_API_KEY,
+  apiProvider: 'openai',
+};
 
 export function configureAI(newConfig: AIConfig) {
   config = { ...config, ...newConfig };

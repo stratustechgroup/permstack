@@ -1,15 +1,13 @@
 import { useState } from 'react';
-import { Sparkles, Check, Zap, Shield, Brain } from 'lucide-react';
+import { Sparkles, Check, Zap, Shield, Brain, AlertCircle } from 'lucide-react';
 import { Modal } from './ui/Modal';
 import { Button, Badge } from './ui';
+import { isAIConfigured } from '../lib/ai';
 
 interface AISettingsProps {
   isOpen: boolean;
   onClose: () => void;
 }
-
-// AI is always available (backend-managed)
-const AI_ENABLED = true;
 
 export function AISettings({ isOpen, onClose }: AISettingsProps) {
   const [preferences, setPreferences] = useState({
@@ -17,6 +15,7 @@ export function AISettings({ isOpen, onClose }: AISettingsProps) {
     smartPermissions: true,
   });
   const [saved, setSaved] = useState(false);
+  const aiEnabled = isAIConfigured();
 
   const handleSave = () => {
     // Save preferences to localStorage
@@ -32,20 +31,37 @@ export function AISettings({ isOpen, onClose }: AISettingsProps) {
     <Modal isOpen={isOpen} onClose={onClose} title="AI Assistant" size="md">
       <div className="space-y-5">
         {/* AI Status */}
-        <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-primary-500/20 to-purple-500/20 border border-primary-500/30 rounded-lg">
-          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-purple-500 flex items-center justify-center flex-shrink-0">
-            <Sparkles className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <p className="text-sm text-white font-medium">AI Assistant Active</p>
-              <Badge variant="success" size="sm">Enabled</Badge>
+        {aiEnabled ? (
+          <div className="flex items-start gap-3 p-4 bg-gradient-to-r from-primary-500/20 to-purple-500/20 border border-primary-500/30 rounded-lg">
+            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-5 h-5 text-white" />
             </div>
-            <p className="text-xs text-surface-400 mt-1">
-              Powered by Claude AI to help you create better permission configurations.
-            </p>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-white font-medium">AI Assistant Active</p>
+                <Badge variant="success" size="sm">Enabled</Badge>
+              </div>
+              <p className="text-xs text-surface-400 mt-1">
+                Powered by GPT-4o-mini to help you create better permission configurations.
+              </p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-start gap-3 p-4 bg-yellow-500/10 border border-yellow-500/30 rounded-lg">
+            <div className="w-10 h-10 rounded-lg bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
+              <AlertCircle className="w-5 h-5 text-yellow-400" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="text-sm text-white font-medium">AI Not Configured</p>
+                <Badge variant="warning" size="sm">Limited</Badge>
+              </div>
+              <p className="text-xs text-surface-400 mt-1">
+                Local pattern matching is still available. AI features require API configuration.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Features */}
         <div>
@@ -55,19 +71,19 @@ export function AISettings({ isOpen, onClose }: AISettingsProps) {
               icon={Brain}
               title="Smart Rank Detection"
               description="Automatically suggests permission levels based on rank names and descriptions"
-              enabled={AI_ENABLED}
+              enabled={aiEnabled}
             />
             <FeatureItem
               icon={Zap}
               title="Plugin Permission Lookup"
               description="Finds and generates permissions for plugins not in our database"
-              enabled={AI_ENABLED}
+              enabled={aiEnabled}
             />
             <FeatureItem
               icon={Shield}
               title="Risk Assessment"
               description="Identifies potentially dangerous permissions and suggests safer alternatives"
-              enabled={AI_ENABLED}
+              enabled={aiEnabled}
             />
           </div>
         </div>
