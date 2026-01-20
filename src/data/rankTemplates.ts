@@ -2,21 +2,48 @@ import type { RankTemplate, RankLevelInfo } from './types';
 
 // Define what each rank level means for permission assignment
 export const rankLevels: RankLevelInfo[] = [
+  // Default rank
   {
     id: 'player',
     name: 'Player',
-    description: 'Default rank for all players. Basic gameplay permissions.',
+    description: 'Default rank for all players. Basic gameplay permissions only.',
     examples: ['Member', 'Player', 'Citizen', 'Newcomer', 'Recruit'],
   },
+  // Donor tiers (progressive perks)
   {
     id: 'vip',
-    name: 'VIP / Donator',
-    description: 'Premium rank with extra perks but no staff powers.',
-    examples: ['VIP', 'MVP', 'Elite', 'Premium', 'Supporter', 'Donator'],
+    name: 'VIP (Tier 1)',
+    description: 'Entry-level donor. Basic perks: colored chat, extra homes, minor cosmetics.',
+    examples: ['VIP', 'Supporter', 'Donator', 'Bronze', 'Iron'],
   },
   {
+    id: 'vip_plus',
+    name: 'VIP+ (Tier 2)',
+    description: 'Enhanced donor. More homes, kits, backpack slots, cooldown reductions.',
+    examples: ['VIP+', 'Gold', 'Premium', 'Silver', 'Emerald'],
+  },
+  {
+    id: 'mvp',
+    name: 'MVP (Tier 3)',
+    description: 'Premium donor. Priority features, unique kits, particle effects.',
+    examples: ['MVP', 'Diamond', 'Platinum', 'Noble', 'Champion'],
+  },
+  {
+    id: 'mvp_plus',
+    name: 'MVP+ (Tier 4)',
+    description: 'Advanced donor. Exclusive cosmetics, special abilities, nickname colors.',
+    examples: ['MVP+', 'Titanium', 'Master', 'Heroic', 'Legendary'],
+  },
+  {
+    id: 'elite',
+    name: 'Elite (Tier 5)',
+    description: 'Top donor tier. All donor perks, exclusive features, maximum limits.',
+    examples: ['Elite', 'Legend', 'Immortal', 'Mythic', 'Ultimate', 'Overlord'],
+  },
+  // Staff tiers (moderation powers)
+  {
     id: 'helper',
-    name: 'Helper / Trial Staff',
+    name: 'Helper',
     description: 'Entry-level staff. Can mute, kick, and monitor players.',
     examples: ['Helper', 'Trial Mod', 'Trainee', 'Junior Mod', 'Support'],
   },
@@ -29,7 +56,7 @@ export const rankLevels: RankLevelInfo[] = [
   {
     id: 'admin',
     name: 'Administrator',
-    description: 'Server management. Can spawn items, edit worlds, manage permissions.',
+    description: 'Server management. Can spawn items, edit worlds, manage plugins.',
     examples: ['Admin', 'Administrator', 'Manager', 'Senior Admin'],
   },
   {
@@ -160,7 +187,7 @@ export const rankTemplates: RankTemplate[] = [
   {
     id: 'donation',
     name: 'Donation Focused',
-    description: 'Multiple donation tiers with staff ranks',
+    description: 'Full donor tier progression (VIP → Elite) with staff ranks',
     ranks: [
       {
         id: 'player',
@@ -190,7 +217,7 @@ export const rankTemplates: RankTemplate[] = [
         prefixColor: '&2',
         separator: '»',
         order: 2,
-        level: 'vip',
+        level: 'vip_plus',
       },
       {
         id: 'mvp',
@@ -200,7 +227,7 @@ export const rankTemplates: RankTemplate[] = [
         prefixColor: '&b',
         separator: '»',
         order: 3,
-        level: 'vip',
+        level: 'mvp',
       },
       {
         id: 'mvp-plus',
@@ -210,7 +237,17 @@ export const rankTemplates: RankTemplate[] = [
         prefixColor: '&3',
         separator: '»',
         order: 4,
-        level: 'vip',
+        level: 'mvp_plus',
+      },
+      {
+        id: 'elite',
+        name: 'elite',
+        displayName: 'Elite',
+        prefix: '[Elite] ',
+        prefixColor: '&6',
+        separator: '»',
+        order: 5,
+        level: 'elite',
       },
       {
         id: 'helper',
@@ -219,7 +256,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Helper] ',
         prefixColor: '&9',
         separator: '»',
-        order: 5,
+        order: 6,
         level: 'helper',
       },
       {
@@ -229,7 +266,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Mod] ',
         prefixColor: '&c',
         separator: '»',
-        order: 6,
+        order: 7,
         level: 'mod',
       },
       {
@@ -239,7 +276,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Admin] ',
         prefixColor: '&4',
         separator: '»',
-        order: 7,
+        order: 8,
         level: 'admin',
       },
       {
@@ -249,7 +286,7 @@ export const rankTemplates: RankTemplate[] = [
         prefix: '[Owner] ',
         prefixColor: '&4&l',
         separator: '»',
-        order: 8,
+        order: 9,
         level: 'owner',
       },
     ],
