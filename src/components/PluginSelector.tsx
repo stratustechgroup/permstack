@@ -113,43 +113,55 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold text-white mb-2">Select Installed Plugins</h2>
-        <p className="text-surface-400">
-          Choose the plugins you have installed. We'll generate permissions for these.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold text-white mb-2">Select Installed Plugins</h2>
+          <p className="text-surface-400">
+            Choose the plugins you have installed. We'll generate permissions for these.
+          </p>
+        </div>
+
+        {/* Action buttons - top right */}
+        <div className="flex flex-wrap items-center gap-2">
+          <Button size="sm" onClick={() => setShowSearchModal(true)}>
+            <Plus className="w-4 h-4 mr-1" />
+            Find Plugins
+          </Button>
+          <Button size="sm" variant="secondary" onClick={() => setShowRequestModal(true)}>
+            <Package className="w-4 h-4 mr-1" />
+            Request Plugin
+          </Button>
+          <Button size="sm" variant="secondary" onClick={() => setShowFeedbackModal(true)}>
+            <MessageSquare className="w-4 h-4 mr-1" />
+            Feedback
+          </Button>
+        </div>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
-        <input
-          type="text"
-          placeholder="Search plugins..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 bg-surface-900 border border-surface-800 rounded-lg text-white placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-        />
-      </div>
-
-      {/* Selected count */}
-      <div className="flex items-center justify-between">
-        <span className="text-surface-400">
-          {value.length} plugin{value.length !== 1 ? 's' : ''} selected
-        </span>
+      {/* Search and count row */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-surface-500" />
+          <input
+            type="text"
+            placeholder="Search plugins..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 bg-surface-900 border border-surface-800 rounded-lg text-white placeholder-surface-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+          />
+        </div>
         <div className="flex items-center gap-4">
+          <span className="text-surface-400 whitespace-nowrap">
+            {value.length} selected
+          </span>
           {value.length > 0 && (
             <button
               onClick={() => onChange([])}
-              className="text-sm text-primary-400 hover:text-primary-300"
+              className="text-sm text-primary-400 hover:text-primary-300 whitespace-nowrap"
             >
               Clear all
             </button>
           )}
-          <Button size="sm" variant="secondary" onClick={() => setShowSearchModal(true)}>
-            <Plus className="w-4 h-4 mr-1" />
-            Find More Plugins
-          </Button>
         </div>
       </div>
 
@@ -231,30 +243,6 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
           </div>
         </div>
       )}
-
-      {/* Help Section */}
-      <div className="mt-8 pt-6 border-t border-surface-800">
-        <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
-          <button
-            onClick={() => setShowRequestModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 text-surface-400 hover:text-white hover:bg-surface-800/50 rounded-lg transition-all"
-          >
-            <Package className="w-4 h-4" />
-            Don't see your plugin?
-          </button>
-          <span className="text-surface-700">|</span>
-          <button
-            onClick={() => setShowFeedbackModal(true)}
-            className="inline-flex items-center gap-2 px-4 py-2 text-surface-400 hover:text-white hover:bg-surface-800/50 rounded-lg transition-all"
-          >
-            <MessageSquare className="w-4 h-4" />
-            Send Feedback
-          </button>
-        </div>
-        <p className="text-center text-xs text-surface-600 mt-3">
-          Help us improve PermStack by requesting plugins or sharing your thoughts
-        </p>
-      </div>
 
       {/* Plugin Search Modal */}
       <PluginSearchModal
