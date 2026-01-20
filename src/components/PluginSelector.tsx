@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Search, Check, Plus, AlertCircle } from 'lucide-react';
+import { Search, Check, Plus, AlertCircle, MessageSquare, Package } from 'lucide-react';
 import { Card, Button, Badge } from './ui';
 import { PluginSearchModal } from './PluginSearchModal';
+import { FeedbackModal } from './FeedbackModal';
+import { RequestPluginModal } from './RequestPluginModal';
 import { plugins, pluginsByCategory } from '../data';
 import { SINGLE_SELECT_CATEGORIES } from '../data/types';
 import type { Plugin, PermissionNode, PluginCategory } from '../data/types';
@@ -45,6 +47,8 @@ const categoryOrder: PluginCategory[] = [
 export function PluginSelector({ value, onChange }: PluginSelectorProps) {
   const [search, setSearch] = useState('');
   const [showSearchModal, setShowSearchModal] = useState(false);
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+  const [showRequestModal, setShowRequestModal] = useState(false);
   const [customPlugins, setCustomPlugins] = useState<Plugin[]>([]);
 
   const allPlugins = [...plugins, ...customPlugins];
@@ -228,12 +232,48 @@ export function PluginSelector({ value, onChange }: PluginSelectorProps) {
         </div>
       )}
 
+      {/* Help Section */}
+      <div className="mt-8 pt-6 border-t border-surface-800">
+        <div className="flex flex-wrap items-center justify-center gap-4 text-sm">
+          <button
+            onClick={() => setShowRequestModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 text-surface-400 hover:text-white hover:bg-surface-800/50 rounded-lg transition-all"
+          >
+            <Package className="w-4 h-4" />
+            Don't see your plugin?
+          </button>
+          <span className="text-surface-700">|</span>
+          <button
+            onClick={() => setShowFeedbackModal(true)}
+            className="inline-flex items-center gap-2 px-4 py-2 text-surface-400 hover:text-white hover:bg-surface-800/50 rounded-lg transition-all"
+          >
+            <MessageSquare className="w-4 h-4" />
+            Send Feedback
+          </button>
+        </div>
+        <p className="text-center text-xs text-surface-600 mt-3">
+          Help us improve PermStack by requesting plugins or sharing your thoughts
+        </p>
+      </div>
+
       {/* Plugin Search Modal */}
       <PluginSearchModal
         isOpen={showSearchModal}
         onClose={() => setShowSearchModal(false)}
         onAddPlugin={handleAddCustomPlugin}
         existingPlugins={value}
+      />
+
+      {/* Feedback Modal */}
+      <FeedbackModal
+        isOpen={showFeedbackModal}
+        onClose={() => setShowFeedbackModal(false)}
+      />
+
+      {/* Request Plugin Modal */}
+      <RequestPluginModal
+        isOpen={showRequestModal}
+        onClose={() => setShowRequestModal(false)}
       />
     </div>
   );
