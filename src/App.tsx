@@ -11,14 +11,17 @@ import {
   initializeAIConfig,
 } from './components';
 import { Button } from './components/ui';
+import { TermsOfService, PrivacyPolicy, AcceptableUsePolicy } from './pages';
 import { rankTemplates, popularPlugins } from './data';
 import type { ServerType, Rank } from './data';
 import './index.css';
 
 type Step = 'hero' | 'server' | 'plugins' | 'ranks' | 'output';
+type LegalPage = 'terms' | 'privacy' | 'acceptable-use' | null;
 
 function App() {
   const [step, setStep] = useState<Step>('hero');
+  const [legalPage, setLegalPage] = useState<LegalPage>(null);
   const [serverType, setServerType] = useState<ServerType | null>(null);
   const [selectedPlugins, setSelectedPlugins] = useState<string[]>(
     popularPlugins.map((p) => p.id)
@@ -46,6 +49,16 @@ function App() {
     if (template) {
       setRanks(template.ranks);
     }
+  };
+
+  const handleLegalNavigate = (page: 'terms' | 'privacy' | 'acceptable-use') => {
+    setLegalPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleBackFromLegal = () => {
+    setLegalPage(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const steps: { id: Step; label: string }[] = [
@@ -85,6 +98,19 @@ function App() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
+
+  // Render legal pages
+  if (legalPage === 'terms') {
+    return <TermsOfService onBack={handleBackFromLegal} />;
+  }
+
+  if (legalPage === 'privacy') {
+    return <PrivacyPolicy onBack={handleBackFromLegal} />;
+  }
+
+  if (legalPage === 'acceptable-use') {
+    return <AcceptableUsePolicy onBack={handleBackFromLegal} />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -278,7 +304,7 @@ function App() {
         )}
       </main>
 
-      <Footer />
+      <Footer onNavigate={handleLegalNavigate} />
     </div>
   );
 }

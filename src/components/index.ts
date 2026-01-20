@@ -1,6 +1,7 @@
 export { Header } from './Header';
 export { Footer } from './Footer';
 export { Hero } from './Hero';
+export { Logo, LogoIcon } from './Logo';
 export { ServerTypeSelector } from './ServerTypeSelector';
 export { PluginSelector } from './PluginSelector';
 export { RankBuilder } from './RankBuilder';
