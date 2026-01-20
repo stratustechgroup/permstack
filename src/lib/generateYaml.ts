@@ -20,15 +20,16 @@ export function generateYaml(options: GenerateOptions): string {
 
   // Generate each rank
   for (const rank of ranks) {
+    // Use rank.level to determine which permissions this rank should have
     const permissions = getDefaultPermissionsForRank(
-      mapRankToLevel(rank.id),
+      rank.level,
       serverType,
       selectedPlugins
     );
 
     // Only include permissions that are specifically for this rank level
     const rankSpecificPerms = permissions.filter(
-      (p) => p.recommendedRank === mapRankToLevel(rank.id)
+      (p) => p.recommendedRank === rank.level
     );
 
     lines.push(`  ${rank.name}:`);
@@ -88,13 +89,13 @@ export function generateCommands(options: GenerateOptions): string {
   // Add permissions for each rank
   for (const rank of ranks) {
     const permissions = getDefaultPermissionsForRank(
-      mapRankToLevel(rank.id),
+      rank.level,
       serverType,
       selectedPlugins
     );
 
     const rankSpecificPerms = permissions.filter(
-      (p) => p.recommendedRank === mapRankToLevel(rank.id)
+      (p) => p.recommendedRank === rank.level
     );
 
     if (rankSpecificPerms.length > 0) {
@@ -119,23 +120,23 @@ export function generateCommands(options: GenerateOptions): string {
 export function generateJson(options: GenerateOptions): string {
   const { serverType, selectedPlugins, ranks } = options;
 
-  const groups: Record<string, any> = {};
+  const groups: Record<string, unknown> = {};
 
   for (const rank of ranks) {
     const permissions = getDefaultPermissionsForRank(
-      mapRankToLevel(rank.id),
+      rank.level,
       serverType,
       selectedPlugins
     );
 
     const rankSpecificPerms = permissions.filter(
-      (p) => p.recommendedRank === mapRankToLevel(rank.id)
+      (p) => p.recommendedRank === rank.level
     );
 
     const rankIndex = ranks.findIndex((r) => r.id === rank.id);
     const parentRank = rankIndex > 0 ? ranks[rankIndex - 1] : null;
 
-    const nodes: any[] = [];
+    const nodes: { key: string; value: boolean }[] = [];
 
     // Add permission nodes
     for (const perm of rankSpecificPerms) {
@@ -171,21 +172,4 @@ export function generateJson(options: GenerateOptions): string {
   };
 
   return JSON.stringify(output, null, 2);
-}
-
-// Map custom rank IDs to standard rank levels for permission lookup
-function mapRankToLevel(rankId: string): string {
-  const mappings: Record<string, string> = {
-    player: 'player',
-    vip: 'vip',
-    'vip-plus': 'vip',
-    mvp: 'vip',
-    'mvp-plus': 'vip',
-    helper: 'helper',
-    mod: 'mod',
-    admin: 'admin',
-    owner: 'owner',
-  };
-
-  return mappings[rankId] || 'player';
 }
