@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Plus, Trash2, GripVertical, ChevronDown, ChevronUp, Palette } from 'lucide-react';
 import { Card, Badge, Button } from './ui';
-import { rankTemplates, rankLevels } from '../data';
+import { rankTemplates, rankLevels, separatorPresets } from '../data';
 import type { Rank, RankTemplate, RankLevel } from '../data';
 
 interface RankBuilderProps {
@@ -18,6 +18,8 @@ export function RankBuilder({
   onRanksChange,
 }: RankBuilderProps) {
   const [expandedRank, setExpandedRank] = useState<string | null>(null);
+  const [draggedRank, setDraggedRank] = useState<string | null>(null);
+  const [dragOverRank, setDragOverRank] = useState<string | null>(null);
 
   const handleTemplateSelect = (templateId: string) => {
     onTemplateChange(templateId);
@@ -41,6 +43,7 @@ export function RankBuilder({
       displayName: 'New Rank',
       prefix: '[New] ',
       prefixColor: '&f',
+      separator: ':',
       order: ranks.length,
       level: 'player',
     };
@@ -72,6 +75,48 @@ export function RankBuilder({
     // Update order values
     const reordered = newRanks.map((r, i) => ({ ...r, order: i }));
     onRanksChange(reordered);
+  };
+
+  const handleDragStart = (rankId: string) => {
+    setDraggedRank(rankId);
+  };
+
+  const handleDragOver = (e: React.DragEvent, rankId: string) => {
+    e.preventDefault();
+    if (draggedRank && draggedRank !== rankId) {
+      setDragOverRank(rankId);
+    }
+  };
+
+  const handleDragLeave = () => {
+    setDragOverRank(null);
+  };
+
+  const handleDrop = (targetRankId: string) => {
+    if (!draggedRank || draggedRank === targetRankId) {
+      setDraggedRank(null);
+      setDragOverRank(null);
+      return;
+    }
+
+    const draggedIndex = ranks.findIndex((r) => r.id === draggedRank);
+    const targetIndex = ranks.findIndex((r) => r.id === targetRankId);
+
+    const newRanks = [...ranks];
+    const [removed] = newRanks.splice(draggedIndex, 1);
+    newRanks.splice(targetIndex, 0, removed);
+
+    // Update order values
+    const reordered = newRanks.map((r, i) => ({ ...r, order: i }));
+    onRanksChange(reordered);
+
+    setDraggedRank(null);
+    setDragOverRank(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedRank(null);
+    setDragOverRank(null);
   };
 
   return (
@@ -115,11 +160,18 @@ export function RankBuilder({
               index={index}
               total={ranks.length}
               expanded={expandedRank === rank.id}
+              isDragging={draggedRank === rank.id}
+              isDragOver={dragOverRank === rank.id}
               onToggle={() => setExpandedRank(expandedRank === rank.id ? null : rank.id)}
               onUpdate={(updates) => handleRankUpdate(rank.id, updates)}
               onRemove={() => handleRemoveRank(rank.id)}
               onMoveUp={() => handleMoveRank(rank.id, 'up')}
               onMoveDown={() => handleMoveRank(rank.id, 'down')}
+              onDragStart={() => handleDragStart(rank.id)}
+              onDragOver={(e) => handleDragOver(e, rank.id)}
+              onDragLeave={handleDragLeave}
+              onDrop={() => handleDrop(rank.id)}
+              onDragEnd={handleDragEnd}
             />
           ))}
         </div>
@@ -162,11 +214,18 @@ interface RankEditorProps {
   index: number;
   total: number;
   expanded: boolean;
+  isDragging: boolean;
+  isDragOver: boolean;
   onToggle: () => void;
   onUpdate: (updates: Partial<Rank>) => void;
   onRemove: () => void;
   onMoveUp: () => void;
   onMoveDown: () => void;
+  onDragStart: () => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDragLeave: () => void;
+  onDrop: () => void;
+  onDragEnd: () => void;
 }
 
 function RankEditor({
@@ -174,16 +233,35 @@ function RankEditor({
   index,
   total,
   expanded,
+  isDragging,
+  isDragOver,
   onToggle,
   onUpdate,
   onRemove,
   onMoveUp,
   onMoveDown,
+  onDragStart,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  onDragEnd,
 }: RankEditorProps) {
   const levelInfo = rankLevels.find((l) => l.id === rank.level);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+  const colorInputRef = useRef<HTMLInputElement>(null);
 
   return (
-    <Card className={`transition-all ${expanded ? 'ring-1 ring-primary-500/50' : ''}`}>
+    <Card
+      className={`transition-all ${expanded ? 'ring-1 ring-primary-500/50' : ''} ${
+        isDragging ? 'opacity-50 scale-95' : ''
+      } ${isDragOver ? 'ring-2 ring-primary-400 bg-primary-500/10' : ''}`}
+      draggable
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+      onDragEnd={onDragEnd}
+    >
       {/* Collapsed view */}
       <div className="flex items-center gap-3">
         <div className="flex flex-col gap-0.5">
@@ -203,7 +281,7 @@ function RankEditor({
           </button>
         </div>
 
-        <GripVertical className="w-4 h-4 text-surface-600" />
+        <GripVertical className="w-4 h-4 text-surface-600 cursor-grab active:cursor-grabbing" />
 
         <div className="flex-1 flex items-center gap-3 cursor-pointer" onClick={onToggle}>
           <span className="text-surface-500 text-sm font-mono w-6">{index + 1}.</span>
@@ -274,27 +352,136 @@ function RankEditor({
             </div>
 
             {/* Prefix Color */}
-            <div>
+            <div className="md:col-span-2">
               <label className="block text-sm font-medium text-surface-300 mb-1">
-                Prefix Color Code
+                Prefix Color <span className="text-surface-500">(legacy codes, hex, or gradients)</span>
               </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={rank.prefixColor}
-                  onChange={(e) => onUpdate({ prefixColor: e.target.value })}
-                  className="input flex-1 font-mono"
-                  placeholder="e.g. &c"
-                />
-                <div className="flex gap-1">
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={rank.prefixColor}
+                    onChange={(e) => onUpdate({ prefixColor: e.target.value })}
+                    className="input flex-1 font-mono"
+                    placeholder="e.g. &c, #FF5555, or <gradient:#FF0000:#00FF00>"
+                  />
+                  <button
+                    onClick={() => setShowColorPicker(!showColorPicker)}
+                    className={`p-2 rounded border transition-colors ${
+                      showColorPicker
+                        ? 'border-primary-500 bg-primary-500/10 text-primary-400'
+                        : 'border-surface-700 hover:border-surface-500 text-surface-400'
+                    }`}
+                    title="Toggle color picker"
+                  >
+                    <Palette className="w-5 h-5" />
+                  </button>
+                  <input
+                    ref={colorInputRef}
+                    type="color"
+                    className="sr-only"
+                    onChange={(e) => onUpdate({ prefixColor: e.target.value })}
+                  />
+                </div>
+
+                {/* Quick color codes */}
+                <div className="flex flex-wrap gap-1">
                   {colorCodes.map((code) => (
                     <button
                       key={code.code}
                       onClick={() => onUpdate({ prefixColor: code.code })}
-                      className="w-6 h-9 rounded border border-surface-700 hover:border-surface-500"
+                      className={`w-6 h-6 rounded border transition-all ${
+                        rank.prefixColor === code.code
+                          ? 'border-white ring-1 ring-white scale-110'
+                          : 'border-surface-700 hover:border-surface-500 hover:scale-105'
+                      }`}
                       style={{ backgroundColor: code.hex }}
-                      title={code.name}
+                      title={`${code.name} (${code.code})`}
                     />
+                  ))}
+                </div>
+
+                {/* Expanded color picker */}
+                {showColorPicker && (
+                  <div className="bg-surface-800 rounded-lg p-3 space-y-3">
+                    <div>
+                      <label className="block text-xs text-surface-400 mb-1">Hex Color</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="color"
+                          value={rank.prefixColor.startsWith('#') ? rank.prefixColor : '#FFFFFF'}
+                          onChange={(e) => onUpdate({ prefixColor: e.target.value })}
+                          className="w-10 h-8 rounded cursor-pointer"
+                        />
+                        <input
+                          type="text"
+                          placeholder="#FF5555"
+                          value={rank.prefixColor.startsWith('#') ? rank.prefixColor : ''}
+                          onChange={(e) => onUpdate({ prefixColor: e.target.value })}
+                          className="input flex-1 font-mono text-sm"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs text-surface-400 mb-1">
+                        Gradient (MiniMessage format)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="<gradient:#FF0000:#00FF00>text</gradient>"
+                        value={rank.prefixColor.includes('gradient') ? rank.prefixColor : ''}
+                        onChange={(e) => onUpdate({ prefixColor: e.target.value })}
+                        className="input w-full font-mono text-sm"
+                      />
+                      <div className="flex gap-2 mt-2">
+                        {gradientPresets.map((preset) => (
+                          <button
+                            key={preset.label}
+                            onClick={() => onUpdate({ prefixColor: preset.value })}
+                            className="px-2 py-1 text-xs rounded border border-surface-600 hover:border-surface-500"
+                            style={{
+                              background: `linear-gradient(to right, ${preset.colors[0]}, ${preset.colors[1]})`,
+                              WebkitBackgroundClip: 'text',
+                              WebkitTextFillColor: 'transparent',
+                            }}
+                          >
+                            {preset.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Separator */}
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-surface-300 mb-1">
+                Chat Separator <span className="text-surface-500">(character between name and message)</span>
+              </label>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={rank.separator || ':'}
+                  onChange={(e) => onUpdate({ separator: e.target.value })}
+                  className="input w-full font-mono"
+                  placeholder="e.g. : or → or »"
+                />
+                <div className="flex flex-wrap gap-2">
+                  {separatorPresets.map((preset) => (
+                    <button
+                      key={preset.label}
+                      onClick={() => onUpdate({ separator: preset.value })}
+                      className={`px-3 py-1.5 rounded border text-sm transition-all ${
+                        rank.separator === preset.value
+                          ? 'border-primary-500 bg-primary-500/10 text-primary-400'
+                          : 'border-surface-700 hover:border-surface-500 text-surface-300'
+                      }`}
+                    >
+                      <span className="mr-2">{preset.label}</span>
+                      <span className="font-mono text-surface-400">{preset.value || '(none)'}</span>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -335,7 +522,7 @@ function RankEditor({
             <div className="bg-surface-800 rounded-lg p-3 font-mono">
               <span
                 dangerouslySetInnerHTML={{
-                  __html: formatMinecraftColors(`${rank.prefixColor}${rank.prefix}${rank.displayName}&7: Hello everyone!`),
+                  __html: formatMinecraftColors(`${rank.prefixColor}${rank.prefix}${rank.displayName}&7${rank.separator || ':'} Hello everyone!`),
                 }}
               />
             </div>
@@ -364,6 +551,16 @@ const colorCodes = [
   { code: '&d', hex: '#FF55FF', name: 'Light Purple' },
   { code: '&e', hex: '#FFFF55', name: 'Yellow' },
   { code: '&f', hex: '#FFFFFF', name: 'White' },
+];
+
+// Gradient presets for MiniMessage format
+const gradientPresets = [
+  { label: 'Fire', value: '<gradient:#FF0000:#FFAA00>', colors: ['#FF0000', '#FFAA00'] },
+  { label: 'Ocean', value: '<gradient:#0000AA:#55FFFF>', colors: ['#0000AA', '#55FFFF'] },
+  { label: 'Sunset', value: '<gradient:#FF5555:#AA00AA>', colors: ['#FF5555', '#AA00AA'] },
+  { label: 'Forest', value: '<gradient:#00AA00:#FFFF55>', colors: ['#00AA00', '#FFFF55'] },
+  { label: 'Royal', value: '<gradient:#5555FF:#AA00AA>', colors: ['#5555FF', '#AA00AA'] },
+  { label: 'Gold', value: '<gradient:#FFAA00:#FFFF55>', colors: ['#FFAA00', '#FFFF55'] },
 ];
 
 function getLevelVariant(level: RankLevel): 'default' | 'info' | 'success' | 'warning' | 'danger' {

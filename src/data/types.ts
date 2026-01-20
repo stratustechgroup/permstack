@@ -36,7 +36,8 @@ export interface Rank {
   name: string;
   displayName: string;
   prefix: string;
-  prefixColor: string;
+  prefixColor: string; // Can be legacy (&c), hex (#FF5555), or gradient (<gradient:#FF0000:#00FF00>)
+  separator: string; // Custom separator like ":" or "→" or "»"
   order: number;
   level: RankLevel; // Maps to permission level for generating correct permissions
 }

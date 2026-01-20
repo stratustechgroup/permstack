@@ -50,9 +50,12 @@ export function generateYaml(options: GenerateOptions): string {
       }
     }
 
-    // Add meta (prefix)
+    // Add meta (prefix and separator)
     lines.push('    meta:');
     lines.push(`      prefix: '${rank.prefixColor}${rank.prefix}'`);
+    if (rank.separator && rank.separator !== ':') {
+      lines.push(`      separator: '${rank.separator}'`);
+    }
     lines.push('');
   }
 
@@ -113,6 +116,17 @@ export function generateCommands(options: GenerateOptions): string {
     const prefix = `${rank.prefixColor}${rank.prefix}`.replace(/"/g, '\\"');
     lines.push(`/lp group ${rank.name} meta setprefix "${prefix}"`);
   }
+  lines.push('');
+
+  // Set custom separators (if not default colon)
+  const customSeparators = ranks.filter((r) => r.separator && r.separator !== ':');
+  if (customSeparators.length > 0) {
+    lines.push('# ---------- CHAT SEPARATORS ----------');
+    lines.push('# Note: These require a chat plugin that supports custom separators');
+    for (const rank of customSeparators) {
+      lines.push(`/lp group ${rank.name} meta set separator "${rank.separator}"`);
+    }
+  }
 
   return lines.join('\n');
 }
@@ -159,6 +173,14 @@ export function generateJson(options: GenerateOptions): string {
       key: `prefix.${(rankIndex + 1) * 10}.${rank.prefixColor}${rank.prefix}`,
       value: true,
     });
+
+    // Add separator if custom
+    if (rank.separator && rank.separator !== ':') {
+      nodes.push({
+        key: `meta.separator.${rank.separator}`,
+        value: true,
+      });
+    }
 
     groups[rank.name] = {
       name: rank.name,
