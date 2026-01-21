@@ -1039,6 +1039,287 @@ export const plugins: Plugin[] = [
     isPopular: false,
     gamemodes: gm('skyblock', 'factions'),
   },
+
+  // ============================================
+  // VOICE & COMMUNICATION
+  // ============================================
+  {
+    id: 'simplevoicechat',
+    name: 'Simple Voice Chat',
+    slug: 'simple-voice-chat',
+    description: 'Proximity voice chat with groups and PTT',
+    category: 'chat',
+    isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
+  },
+  {
+    id: 'interactivechat',
+    name: 'InteractiveChat',
+    slug: 'interactivechat',
+    description: 'Enhanced chat with item/inventory preview on hover',
+    category: 'chat',
+    isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
+  },
+
+  // ============================================
+  // PERFORMANCE & DIAGNOSTICS
+  // ============================================
+  {
+    id: 'spark',
+    name: 'Spark',
+    slug: 'spark',
+    description: 'Performance profiler for diagnosing lag',
+    category: 'utility',
+    isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
+  },
+  {
+    id: 'wildstacker',
+    name: 'WildStacker',
+    slug: 'wildstacker',
+    description: 'Stack mobs, items, and spawners for performance',
+    category: 'utility',
+    isPopular: true,
+    gamemodes: gm('skyblock', 'factions'),
+  },
+
+  // ============================================
+  // WEB MAPS
+  // ============================================
+  {
+    id: 'bluemap',
+    name: 'BlueMap',
+    slug: 'bluemap',
+    description: '3D web-based world map with real-time updates',
+    category: 'utility',
+    isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
+  },
+  {
+    id: 'squaremap',
+    name: 'Squaremap',
+    slug: 'squaremap',
+    description: 'Lightweight 2D web map with better performance',
+    category: 'utility',
+    isPopular: false,
+    gamemodes: gm('survival', 'factions'),
+  },
+
+  // ============================================
+  // SKINS & COSMETICS
+  // ============================================
+  {
+    id: 'skinsrestorer',
+    name: 'SkinsRestorer',
+    slug: 'skinsrestorer',
+    description: 'Skin management for offline/online servers',
+    category: 'utility',
+    isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
+  },
+  {
+    id: 'ultracosmetics',
+    name: 'UltraCosmetics',
+    slug: 'ultracosmetics',
+    description: 'Free cosmetics: gadgets, pets, mounts, particles',
+    category: 'display',
+    isPopular: true,
+    gamemodes: gm('minigames', 'survival', 'skyblock'),
+  },
+  {
+    id: 'playerparticles',
+    name: 'PlayerParticles',
+    slug: 'playerparticles',
+    description: 'Custom particle effects for players',
+    category: 'display',
+    isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'minigames'),
+  },
+
+  // ============================================
+  // DONATION & MONETIZATION
+  // ============================================
+  {
+    id: 'tebex',
+    name: 'Tebex',
+    slug: 'tebex',
+    description: 'Donation store integration (formerly Buycraft)',
+    category: 'economy',
+    isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
+  },
+
+  // ============================================
+  // LIBRARIES & DEPENDENCIES
+  // ============================================
+  {
+    id: 'protocollib',
+    name: 'ProtocolLib',
+    slug: 'protocollib',
+    description: 'Packet manipulation library (required by many plugins)',
+    category: 'utility',
+    isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
+  },
+
+  // ============================================
+  // RPG & TECH
+  // ============================================
+  {
+    id: 'slimefun',
+    name: 'Slimefun4',
+    slug: 'slimefun4',
+    description: 'Tech and magic modpack experience without mods',
+    category: 'fun',
+    isPopular: true,
+    gamemodes: gm('survival'),
+  },
+
+  // ============================================
+  // ANIMATIONS & INTERACTIONS
+  // ============================================
+  {
+    id: 'gsit',
+    name: 'GSit',
+    slug: 'gsit',
+    description: 'Sit, lay, crawl, and spin animations',
+    category: 'fun',
+    isPopular: true,
+    gamemodes: gm('survival', 'skyblock'),
+  },
+
+  // ============================================
+  // ANALYTICS
+  // ============================================
+  {
+    id: 'plan',
+    name: 'Plan',
+    slug: 'plan',
+    description: 'Player analytics, statistics, and web dashboard',
+    category: 'utility',
+    isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
+  },
+
+  // ============================================
+  // ADDITIONAL ANTICHEATS
+  // ============================================
+  {
+    id: 'polar',
+    name: 'Polar Anticheat',
+    slug: 'polar',
+    description: 'Cloud-based premium anticheat with ML detection',
+    category: 'moderation',
+    isPopular: true,
+    gamemodes: gm('factions', 'minigames'),
+  },
+  {
+    id: 'intave',
+    name: 'Intave Anticheat',
+    slug: 'intave',
+    description: 'Premium anticheat for competitive servers',
+    category: 'moderation',
+    isPopular: false,
+    gamemodes: gm('factions', 'minigames'),
+  },
+
+  // ============================================
+  // PRISON GAMEMODE
+  // ============================================
+  {
+    id: 'prison',
+    name: 'Prison',
+    slug: 'prison',
+    description: 'Core prison plugin with mines, ranks, and prestiges',
+    category: 'gamemodes',
+    isPopular: true,
+    gamemodes: gm('factions'),
+  },
+  {
+    id: 'tokenenchant',
+    name: 'TokenEnchant',
+    slug: 'tokenenchant',
+    description: 'Custom pickaxe enchantments for prison servers',
+    category: 'fun',
+    isPopular: true,
+    gamemodes: gm('factions'),
+  },
+  {
+    id: 'mineresetlite',
+    name: 'MineResetLite',
+    slug: 'mineresetlite',
+    description: 'Automatic mine reset and management',
+    category: 'gamemodes',
+    isPopular: false,
+    gamemodes: gm('factions'),
+  },
+
+  // ============================================
+  // ADDITIONAL MODERATION
+  // ============================================
+  {
+    id: 'supervanish',
+    name: 'SuperVanish',
+    slug: 'supervanish',
+    description: 'Free advanced vanish plugin',
+    category: 'moderation',
+    isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
+  },
+  {
+    id: 'antiworlddownloader',
+    name: 'AntiWorldDownloader',
+    slug: 'antiworlddownloader',
+    description: 'Prevent players from downloading your world',
+    category: 'moderation',
+    isPopular: false,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
+  },
+  {
+    id: 'exploitfixer',
+    name: 'ExploitFixer',
+    slug: 'exploitfixer',
+    description: 'Block common exploits, crashes, and dupes',
+    category: 'moderation',
+    isPopular: true,
+    gamemodes: gm('survival', 'skyblock', 'factions', 'minigames'),
+  },
+  {
+    id: 'illegalstack',
+    name: 'IllegalStack',
+    slug: 'illegalstack',
+    description: 'Prevent illegal item stacks and NBT exploits',
+    category: 'moderation',
+    isPopular: false,
+    gamemodes: gm('survival', 'skyblock', 'factions'),
+  },
+
+  // ============================================
+  // TREE FELLING
+  // ============================================
+  {
+    id: 'ultimatetimber',
+    name: 'UltimateTimber',
+    slug: 'ultimatetimber',
+    description: 'Chop down entire trees at once',
+    category: 'utility',
+    isPopular: true,
+    gamemodes: gm('survival', 'skyblock'),
+  },
+
+  // ============================================
+  // FUN & MISCELLANEOUS
+  // ============================================
+  {
+    id: 'brewery',
+    name: 'Brewery',
+    slug: 'brewery',
+    description: 'Alcohol brewing with fermentation and drunk effects',
+    category: 'fun',
+    isPopular: true,
+    gamemodes: gm('survival'),
+  },
 ];
 
 export const pluginsByCategory = plugins.reduce((acc, plugin) => {
